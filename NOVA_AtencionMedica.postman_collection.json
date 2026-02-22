@@ -1,0 +1,1755 @@
+{
+	"info": {
+		"_postman_id": "nova-atencion-medica-collection",
+		"name": "NOVA Atención Médica Microservices (Sin Seprin Security)",
+		"description": "Colección de pruebas para los microservicios de NOVA Atención Médica sin el módulo de seguridad centralizado (msvc-security). Los grupos \"Auth (Security)\" y \"Security Tests\" quedan como referencia histórica y pueden fallar porque el servicio de seguridad ha sido eliminado.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "url_cita",
+			"value": "http://localhost:8081",
+			"type": "string"
+		},
+		{
+			"key": "url_diagnostico",
+			"value": "http://localhost:8082",
+			"type": "string"
+		},
+		{
+			"key": "url_medico",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "url_security",
+			"value": "http://localhost:8084",
+			"type": "string"
+		},
+		{
+			"key": "url_paciente",
+			"value": "http://localhost:8083",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth (Security)",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.environment.set(\"token\", jsonData.accessToken);",
+									"    console.log(\"Token saved to environment variable 'token'\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_security}}/auth/log-in",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"auth",
+								"log-in"
+							]
+						}
+					}
+				},
+				{
+					"name": "Sign Up (Register)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"newuser\",\n    \"password\": \"12345\",\n    \"roleRequest\": {\n        \"roleListName\": [\"ADMIN\", \"USER\"]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_security}}/auth/sign-up",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"auth",
+								"sign-up"
+							]
+						}
+					}
+				},
+				{
+					"name": "List Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_security}}/users",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_security}}/users/1",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"updatedUser\",\n    \"password\": \"newpassword\",\n    \"roleRequest\": {\n        \"roleListName\": [\"USER\"]\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_security}}/users/1",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete User (Soft)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_security}}/users/1",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete User (Force)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_security}}/users/1/force",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"force"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Pacientes",
+			"item": [
+				{
+					"name": "Listar Pacientes",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_paciente}}/pacientes",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Paciente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_paciente}}/pacientes/1",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Paciente",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paciente\": {\n        \"nombres\": \"Nuevo Paciente\",\n        \"apellidos\": \"Apellido Nuevo\",\n        \"email\": \"newpatient@email.com\",\n        \"dni\": \"12345678\",\n        \"fechaNacimiento\": \"2000-01-01T00:00:00.000+00:00\",\n        \"genero\": \"MASCULINO\",\n        \"telefono\": \"987654321\",\n        \"direccion\": \"Calle Falsa 123\",\n        \"estado\": \"ACTIVO\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_paciente}}/pacientes",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes"
+							]
+						}
+					}
+				},
+				{
+					"name": "Editar Paciente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombres\": \"Paciente Editado\",\n    \"apellidos\": \"Apellido Editado\",\n    \"email\": \"editedpatient@email.com\",\n    \"dni\": \"12345678\",\n    \"fechaNacimiento\": \"2000-01-01T00:00:00.000+00:00\",\n    \"genero\": \"FEMENINO\",\n    \"telefono\": \"987654321\",\n    \"direccion\": \"Calle Verdadera 456\",\n    \"estado\": \"ACTIVO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_paciente}}/pacientes/1",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Paciente (Soft)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_paciente}}/pacientes/1",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Paciente (Force)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_paciente}}/pacientes/1/force",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes",
+								"1",
+								"force"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Citas de Paciente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_paciente}}/pacientes/1/citas",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes",
+								"1",
+								"citas"
+							]
+						}
+					}
+				},
+				{
+					"name": "Agendar Cita (desde Paciente)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Creación de cita desde paciente (201 CREATED)', function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fechaCita\": \"2024-12-31T00:00:00.000+00:00\",\n    \"horaInicio\": \"10:00:00\",\n    \"horaFin\": \"10:30:00\",\n    \"motivo\": \"Consulta desde Paciente\",\n    \"estado\": \"PROGRAMADA\",\n    \"pacienteId\": 1,\n    \"medicoId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_paciente}}/pacientes/agendar-cita",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes",
+								"agendar-cita"
+							]
+						}
+					}
+				},
+				{
+					"name": "Historial Medico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_paciente}}/pacientes/1/historial-medico",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes",
+								"1",
+								"historial-medico"
+							]
+						}
+					}
+				},
+				{
+					"name": "Cambiar estado cita (por paciente)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (pm.environment.get('token_patient')) {",
+									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + pm.environment.get('token_patient')});",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Cambiar estado por paciente -> 200 OK', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estado\": \"CANCELADA\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_paciente}}/pacientes/1/citas/1/estado",
+							"host": [
+								"{{url_paciente}}"
+							],
+							"path": [
+								"pacientes",
+								"1",
+								"citas",
+								"1",
+								"estado"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Medicos",
+			"item": [
+				{
+					"name": "Listar Medicos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_medico}}/medicos",
+							"host": [
+								"{{url_medico}}"
+							],
+							"path": [
+								"medicos"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Medico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_medico}}/medicos/1",
+							"host": [
+								"{{url_medico}}"
+							],
+							"path": [
+								"medicos",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Medico",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"medico\": {\n        \"nombres\": \"Nuevo Medico\",\n        \"apellidos\": \"Apellido Medico\",\n        \"email\": \"newdoctor@email.com\",\n        \"dni\": \"87654321\",\n        \"telefono\": \"912345678\",\n        \"especialidad\": \"CARDIOLOGIA\",\n        \"estado\": \"ACTIVO\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_medico}}/medicos",
+							"host": [
+								"{{url_medico}}"
+							],
+							"path": [
+								"medicos"
+							]
+						}
+					}
+				},
+				{
+					"name": "Editar Medico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombres\": \"Medico Editado\",\n    \"apellidos\": \"Apellido Editado\",\n    \"email\": \"editeddoctor@email.com\",\n    \"dni\": \"87654321\",\n    \"telefono\": \"912345678\",\n    \"especialidad\": \"PEDIATRIA\",\n    \"estado\": \"ACTIVO\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_medico}}/medicos/1",
+							"host": [
+								"{{url_medico}}"
+							],
+							"path": [
+								"medicos",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Medico (Soft)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_medico}}/medicos/1",
+							"host": [
+								"{{url_medico}}"
+							],
+							"path": [
+								"medicos",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Medico (Force)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_medico}}/medicos/1/force",
+							"host": [
+								"{{url_medico}}"
+							],
+							"path": [
+								"medicos",
+								"1",
+								"force"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Citas de Medico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_medico}}/medicos/1/citas",
+							"host": [
+								"{{url_medico}}"
+							],
+							"path": [
+								"medicos",
+								"1",
+								"citas"
+							]
+						}
+					}
+				},
+				{
+					"name": "Agendar Cita (desde Medico)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fechaCita\": \"2024-12-31T00:00:00.000+00:00\",\n    \"horaInicio\": \"10:00:00\",\n    \"horaFin\": \"10:30:00\",\n    \"motivo\": \"Consulta desde Medico\",\n    \"estado\": \"PROGRAMADA\",\n    \"pacienteId\": 1,\n    \"medicoId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_medico}}/medicos/agendar-cita",
+							"host": [
+								"{{url_medico}}"
+							],
+							"path": [
+								"medicos",
+								"agendar-cita"
+							]
+						}
+					}
+				},
+				{
+					"name": "Registrar Diagnostico (desde Medico)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"descripcion\": \"Diagnostico desde Medico\",\n    \"tipoDiagnostico\": \"DEFINITIVO\",\n    \"fechaDiagnostico\": \"2024-12-31T00:00:00.000+00:00\",\n    \"citaId\": 1,\n    \"pacienteId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_medico}}/medicos/registrar-diagnostico",
+							"host": [
+								"{{url_medico}}"
+							],
+							"path": [
+								"medicos",
+								"registrar-diagnostico"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Citas",
+			"item": [
+				{
+					"name": "Listar Citas",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_cita}}/citas",
+							"host": [
+								"{{url_cita}}"
+							],
+							"path": [
+								"citas"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Cita",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_cita}}/citas/1",
+							"host": [
+								"{{url_cita}}"
+							],
+							"path": [
+								"citas",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Cita con Detalle",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_cita}}/citas/con-detalle/1",
+							"host": [
+								"{{url_cita}}"
+							],
+							"path": [
+								"citas",
+								"con-detalle",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Citas por Paciente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_cita}}/citas/paciente/1",
+							"host": [
+								"{{url_cita}}"
+							],
+							"path": [
+								"citas",
+								"paciente",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Citas por Medico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_cita}}/citas/medico/1",
+							"host": [
+								"{{url_cita}}"
+							],
+							"path": [
+								"citas",
+								"medico",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Cita",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fechaCita\": \"2024-12-31T00:00:00.000+00:00\",\n    \"horaInicio\": \"10:00:00\",\n    \"horaFin\": \"10:30:00\",\n    \"motivo\": \"Consulta General\",\n    \"estado\": \"PROGRAMADA\",\n    \"pacienteId\": 1,\n    \"medicoId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_cita}}/citas",
+							"host": [
+								"{{url_cita}}"
+							],
+							"path": [
+								"citas"
+							]
+						}
+					}
+				},
+				{
+					"name": "Editar Cita",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fechaCita\": \"2024-12-31T00:00:00.000+00:00\",\n    \"horaInicio\": \"11:00:00\",\n    \"horaFin\": \"11:30:00\",\n    \"motivo\": \"Consulta General Editada\",\n    \"estado\": \"PROGRAMADA\",\n    \"pacienteId\": 1,\n    \"medicoId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_cita}}/citas/1",
+							"host": [
+								"{{url_cita}}"
+							],
+							"path": [
+								"citas",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Cita (Soft)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_cita}}/citas/1",
+							"host": [
+								"{{url_cita}}"
+							],
+							"path": [
+								"citas",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Cita (Force)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_cita}}/citas/1/force",
+							"host": [
+								"{{url_cita}}"
+							],
+							"path": [
+								"citas",
+								"1",
+								"force"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Diagnosticos",
+			"item": [
+				{
+					"name": "Listar Diagnosticos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Diagnostico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos/1",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener Diagnostico con Detalle",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos/con-detalle/1",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos",
+								"con-detalle",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Diagnosticos por Cita",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos/cita/1",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos",
+								"cita",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Listar Diagnosticos por Paciente",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos/paciente/1",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos",
+								"paciente",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear Diagnostico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"descripcion\": \"Diagnostico Directo\",\n    \"tipoDiagnostico\": \"DEFINITIVO\",\n    \"fechaDiagnostico\": \"2024-12-31T00:00:00.000+00:00\",\n    \"citaId\": 1,\n    \"pacienteId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos"
+							]
+						}
+					}
+				},
+				{
+					"name": "Editar Diagnostico",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"descripcion\": \"Diagnostico Editado\",\n    \"tipoDiagnostico\": \"DEFINITIVO\",\n    \"fechaDiagnostico\": \"2024-12-31T00:00:00.000+00:00\",\n    \"citaId\": 1,\n    \"pacienteId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos/1",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Diagnostico (Soft)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos/1",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar Diagnostico (Force)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos/1/force",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos",
+								"1",
+								"force"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Security Tests (msvc-security eliminado)",
+			"item": [
+				{
+					"name": "Unauthenticated - GET Diagnosticos (expect 200 sin seguridad)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status es 200 (seguridad deshabilitada)', function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos"
+							]
+						}
+					}
+				},
+
+				{
+					"name": "SignUp Patient (create user)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Sign up returns 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.environment.set('token_patient', jsonData.accessToken);",
+									"    console.log('token_patient saved');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"patient_test\",\n  \"password\": \"12345\",\n  \"roleRequest\": {\n    \"roleListName\": [\"PATIENT\"]\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_security}}/auth/sign-up",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"auth",
+								"sign-up"
+							]
+						}
+					}
+				},
+
+				{
+					"name": "Login Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Login returns 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.environment.set('token_patient', jsonData.accessToken);",
+									"    console.log('token_patient saved from login');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"patient_test\",\n  \"password\": \"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_security}}/auth/log-in",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"auth",
+								"log-in"
+							]
+						}
+					}
+				},
+
+				{
+					"name": "Create Diagnostico as Patient (expect 201 sin seguridad)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set Authorization header from token_patient if present",
+									"if (pm.environment.get('token_patient')) {",
+									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + pm.environment.get('token_patient')});",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Paciente puede crear diagnostico (201)', function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+						],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"descripcion\": \"Intento desde paciente\",\n  \"tipoDiagnostico\": \"PROVISIONAL\",\n  \"fechaDiagnostico\": \"2025-12-31T00:00:00.000+00:00\",\n  \"citaId\": 1,\n  \"pacienteId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos"
+							]
+						}
+					}
+				},
+
+				{
+					"name": "SignUp Doctor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Sign up doctor returns 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.environment.set('token_doctor', jsonData.accessToken);",
+									"    console.log('token_doctor saved');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"doctor_test\",\n  \"password\": \"12345\",\n  \"roleRequest\": {\n    \"roleListName\": [\"DOCTOR\"]\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_security}}/auth/sign-up",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"auth",
+								"sign-up"
+							]
+						}
+					}
+				},
+
+				{
+					"name": "Login Doctor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Login doctor returns 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.environment.set('token_doctor', jsonData.accessToken);",
+									"    console.log('token_doctor saved from login');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"doctor_test\",\n  \"password\": \"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_security}}/auth/log-in",
+							"host": [
+								"{{url_security}}"
+							],
+							"path": [
+								"auth",
+								"log-in"
+							]
+						}
+					}
+				},
+
+				{
+					"name": "Create Diagnostico as Doctor (expect 201)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set Authorization header from token_doctor if present",
+									"if (pm.environment.get('token_doctor')) {",
+									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + pm.environment.get('token_doctor')});",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Doctor can create diagnostico (201)', function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+						],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"descripcion\": \"Diagnostico desde doctor\",\n  \"tipoDiagnostico\": \"DEFINITIVO\",\n  \"fechaDiagnostico\": \"2025-12-31T00:00:00.000+00:00\",\n  \"citaId\": 1,\n  \"pacienteId\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_diagnostico}}/diagnosticos",
+							"host": [
+								"{{url_diagnostico}}"
+							],
+							"path": [
+								"diagnosticos"
+							]
+						}
+					}
+				}
+			]
+			}
+	]
+}
