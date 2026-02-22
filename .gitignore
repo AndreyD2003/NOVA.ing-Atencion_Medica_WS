@@ -37,3 +37,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Entornos y secretos
+*.env
+.env
+.env.*
+**/src/main/resources/application-local.properties
+**/src/main/resources/*.secrets.properties

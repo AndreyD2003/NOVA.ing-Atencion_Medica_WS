@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "nova-atencion-medica-collection",
-		"name": "NOVA Atención Médica Microservices (Sin Seprin Security)",
+		"name": "NOVA Atención Médica Microservices (Sin msvc-security)",
 		"description": "Colección de pruebas para los microservicios de NOVA Atención Médica sin el módulo de seguridad centralizado (msvc-security). Los grupos \"Auth (Security)\" y \"Security Tests\" quedan como referencia histórica y pueden fallar porque el servicio de seguridad ha sido eliminado.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
