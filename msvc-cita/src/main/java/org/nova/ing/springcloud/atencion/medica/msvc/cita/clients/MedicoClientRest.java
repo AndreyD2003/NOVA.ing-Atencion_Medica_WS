@@ -1,12 +1,11 @@
 package org.nova.ing.springcloud.atencion.medica.msvc.cita.clients;
 
-import org.nova.ing.springcloud.atencion.medica.msvc.cita.config.FeignInterceptorConfig;
 import org.nova.ing.springcloud.atencion.medica.msvc.cita.models.dto.Medico;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "msvc-medico", url = "http://localhost:8080/medicos", configuration = FeignInterceptorConfig.class)
+@FeignClient(name = "msvc-medico", url = "http://localhost:8080/medicos")
 public interface MedicoClientRest {
 
     @GetMapping("/{id}")

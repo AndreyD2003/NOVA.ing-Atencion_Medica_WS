@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "nova-atencion-medica-collection",
 		"name": "NOVA Atención Médica Microservices (Sin msvc-security)",
-		"description": "Colección de pruebas para los microservicios de NOVA Atención Médica sin el módulo de seguridad centralizado (msvc-security). Los grupos \"Auth (Security)\" y \"Security Tests\" quedan como referencia histórica y pueden fallar porque el servicio de seguridad ha sido eliminado.",
+		"description": "Colección de pruebas para los microservicios de NOVA Atención Médica (pacientes, médicos, citas, diagnósticos y Web Semántica). Esta versión ya no incluye el microservicio de seguridad (msvc-security) ni pruebas relacionadas con autenticación JWT.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"variable": [
@@ -22,237 +22,17 @@
 			"type": "string"
 		},
 		{
-			"key": "url_security",
-			"value": "http://localhost:8084",
+			"key": "url_paciente",
+			"value": "http://localhost:8083",
 			"type": "string"
 		},
 		{
-			"key": "url_paciente",
-			"value": "http://localhost:8083",
+			"key": "url_semantic",
+			"value": "http://localhost:8084",
 			"type": "string"
 		}
 	],
 	"item": [
-		{
-			"name": "Auth (Security)",
-			"item": [
-				{
-					"name": "Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"var jsonData = pm.response.json();",
-									"if (jsonData.accessToken) {",
-									"    pm.environment.set(\"token\", jsonData.accessToken);",
-									"    console.log(\"Token saved to environment variable 'token'\");",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"12345\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_security}}/auth/log-in",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"auth",
-								"log-in"
-							]
-						}
-					}
-				},
-				{
-					"name": "Sign Up (Register)",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"newuser\",\n    \"password\": \"12345\",\n    \"roleRequest\": {\n        \"roleListName\": [\"ADMIN\", \"USER\"]\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_security}}/auth/sign-up",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"auth",
-								"sign-up"
-							]
-						}
-					}
-				},
-				{
-					"name": "List Users",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_security}}/users",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"users"
-							]
-						}
-					}
-				},
-				{
-					"name": "Get User",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_security}}/users/1",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"users",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Update User",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"updatedUser\",\n    \"password\": \"newpassword\",\n    \"roleRequest\": {\n        \"roleListName\": [\"USER\"]\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_security}}/users/1",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"users",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Delete User (Soft)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url_security}}/users/1",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"users",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Delete User (Force)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url_security}}/users/1/force",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"users",
-								"1",
-								"force"
-							]
-						}
-					}
-				}
-			]
-		},
 		{
 			"name": "Pacientes",
 			"item": [
@@ -1406,6 +1186,246 @@
 			]
 		},
 		{
+			"name": "Web Semantica",
+			"item": [
+				{
+					"name": "Obtener grafo clínico (JSON)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{url_semantic}}/semantic/grafo/cita/1",
+							"host": [
+								"{{url_semantic}}"
+							],
+							"path": [
+								"semantic",
+								"grafo",
+								"cita",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener grafo RDF (TURTLE)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "text/turtle"
+							}
+						],
+						"url": {
+							"raw": "{{url_semantic}}/semantic/grafo/cita/1/rdf?formato=TURTLE",
+							"host": [
+								"{{url_semantic}}"
+							],
+							"path": [
+								"semantic",
+								"grafo",
+								"cita",
+								"1",
+								"rdf"
+							],
+							"query": [
+								{
+									"key": "formato",
+									"value": "TURTLE"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener grafo RDF (JSON-LD)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/ld+json"
+							}
+						],
+						"url": {
+							"raw": "{{url_semantic}}/semantic/grafo/cita/1/rdf?formato=JSONLD",
+							"host": [
+								"{{url_semantic}}"
+							],
+							"path": [
+								"semantic",
+								"grafo",
+								"cita",
+								"1",
+								"rdf"
+							],
+							"query": [
+								{
+									"key": "formato",
+									"value": "JSONLD"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Ejecutar SPARQL sobre cita",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/sparql-query"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10"
+						},
+						"url": {
+							"raw": "{{url_semantic}}/semantic/grafo/cita/1/sparql",
+							"host": [
+								"{{url_semantic}}"
+							],
+							"path": [
+								"semantic",
+								"grafo",
+								"cita",
+								"1",
+								"sparql"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener grafo RDF sistema completo (TURTLE)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "text/turtle"
+							}
+						],
+						"url": {
+							"raw": "{{url_semantic}}/semantic/grafo/sistema/rdf?formato=TURTLE",
+							"host": [
+								"{{url_semantic}}"
+							],
+							"path": [
+								"semantic",
+								"grafo",
+								"sistema",
+								"rdf"
+							],
+							"query": [
+								{
+									"key": "formato",
+									"value": "TURTLE"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener grafo RDF sistema completo (JSON-LD)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/ld+json"
+							}
+						],
+						"url": {
+							"raw": "{{url_semantic}}/semantic/grafo/sistema/rdf?formato=JSONLD",
+							"host": [
+								"{{url_semantic}}"
+							],
+							"path": [
+								"semantic",
+								"grafo",
+								"sistema",
+								"rdf"
+							],
+							"query": [
+								{
+									"key": "formato",
+									"value": "JSONLD"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Ejecutar SPARQL sobre sistema completo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/sparql-query"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10"
+						},
+						"url": {
+							"raw": "{{url_semantic}}/semantic/grafo/sistema/sparql",
+							"host": [
+								"{{url_semantic}}"
+							],
+							"path": [
+								"semantic",
+								"grafo",
+								"sistema",
+								"sparql"
+							]
+						}
+					}
+				},
+				{
+					"name": "Consulta en lenguaje natural",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pregunta\": \"medicos con especialidad en medicina general\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url_semantic}}/semantic/nl/query",
+							"host": [
+								"{{url_semantic}}"
+							],
+							"path": [
+								"semantic",
+								"nl",
+								"query"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
 			"name": "Security Tests (msvc-security eliminado)",
 			"item": [
 				{
@@ -1438,105 +1458,6 @@
 					}
 				},
 
-				{
-					"name": "SignUp Patient (create user)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Sign up returns 201', function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"var jsonData = pm.response.json();",
-									"if (jsonData.accessToken) {",
-									"    pm.environment.set('token_patient', jsonData.accessToken);",
-									"    console.log('token_patient saved');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"username\": \"patient_test\",\n  \"password\": \"12345\",\n  \"roleRequest\": {\n    \"roleListName\": [\"PATIENT\"]\n  }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_security}}/auth/sign-up",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"auth",
-								"sign-up"
-							]
-						}
-					}
-				},
-
-				{
-					"name": "Login Patient",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Login returns 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"var jsonData = pm.response.json();",
-									"if (jsonData.accessToken) {",
-									"    pm.environment.set('token_patient', jsonData.accessToken);",
-									"    console.log('token_patient saved from login');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"username\": \"patient_test\",\n  \"password\": \"12345\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_security}}/auth/log-in",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"auth",
-								"log-in"
-							]
-						}
-					}
-				},
 
 				{
 					"name": "Create Diagnostico as Patient (expect 201 sin seguridad)",
@@ -1594,105 +1515,6 @@
 					}
 				},
 
-				{
-					"name": "SignUp Doctor",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Sign up doctor returns 201', function () {",
-									"    pm.response.to.have.status(201);",
-									"});",
-									"var jsonData = pm.response.json();",
-									"if (jsonData.accessToken) {",
-									"    pm.environment.set('token_doctor', jsonData.accessToken);",
-									"    console.log('token_doctor saved');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"username\": \"doctor_test\",\n  \"password\": \"12345\",\n  \"roleRequest\": {\n    \"roleListName\": [\"DOCTOR\"]\n  }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_security}}/auth/sign-up",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"auth",
-								"sign-up"
-							]
-						}
-					}
-				},
-
-				{
-					"name": "Login Doctor",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Login doctor returns 200', function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"var jsonData = pm.response.json();",
-									"if (jsonData.accessToken) {",
-									"    pm.environment.set('token_doctor', jsonData.accessToken);",
-									"    console.log('token_doctor saved from login');",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"username\": \"doctor_test\",\n  \"password\": \"12345\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_security}}/auth/log-in",
-							"host": [
-								"{{url_security}}"
-							],
-							"path": [
-								"auth",
-								"log-in"
-							]
-						}
-					}
-				},
 
 				{
 					"name": "Create Diagnostico as Doctor (expect 201)",

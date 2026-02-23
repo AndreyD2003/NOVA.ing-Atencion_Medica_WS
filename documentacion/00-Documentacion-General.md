@@ -1,5 +1,7 @@
 # Documentación General — NOVA Atención Médica (V.5)
 
+> Nota de versión actual: el código ya no incluye `msvc-security` ni validación JWT; las secciones de seguridad y roles descritas aquí son históricas y no se aplican al despliegue actual, que se centra en integración de microservicios y Web Semántica.
+
 ## Arquitectura General
 - Microservicios: msvc-security (auth y usuarios), msvc-paciente, msvc-medico, msvc-cita, msvc-diagnostico.
 - Comunicación síncrona HTTP entre MSVCs usando OpenFeign con propagación del Authorization Header.

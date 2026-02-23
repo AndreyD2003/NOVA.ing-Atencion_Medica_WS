@@ -1,5 +1,7 @@
 # MSVC Medico — Documentación
 
+> Nota de versión actual: este servicio ya no utiliza JWT ni reglas de seguridad en tiempo de ejecución; las menciones a JwtUtils o @PreAuthorize corresponden a una versión anterior.
+
 ## Propósito
 - Gestiona el ciclo de vida del médico, su agenda y casos relacionados a citas y diagnósticos.
 - Aplica reglas de propiedad: el médico solo consulta/gestiona sus propios recursos, salvo ADMIN.

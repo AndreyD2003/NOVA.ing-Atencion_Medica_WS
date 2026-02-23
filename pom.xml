@@ -20,6 +20,7 @@
         <module>msvc-paciente</module>
         <module>msvc-cita</module>
         <module>msvc-diagnostico</module>
+        <module>msvc-web-semantica</module>
     </modules>
 
     <properties>

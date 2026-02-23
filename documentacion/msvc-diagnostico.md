@@ -1,5 +1,7 @@
 # MSVC Diagnóstico — Documentación
 
+> Nota de versión actual: este servicio ya no valida JWT ni aplica reglas de autorización; cualquier sección que haga referencia a filtros de seguridad o @PreAuthorize es histórica.
+
 ## Propósito
 - Gestiona diagnósticos médicos asociados a citas y pacientes.
 - Controla acceso por rol y propiedad del recurso.

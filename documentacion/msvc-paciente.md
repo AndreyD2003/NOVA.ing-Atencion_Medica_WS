@@ -1,5 +1,7 @@
 # MSVC Paciente — Documentación
 
+> Nota de versión actual: este servicio ya no utiliza JWT ni validación de roles en código; las referencias a JwtUtils, filtros de seguridad o @PreAuthorize son históricas.
+
 ## Propósito
 - Gestiona el ciclo de vida del paciente y expone consultas relacionadas (citas, historial médico).
 - Aplica validaciones de formato y unicidad sobre datos sensibles.
