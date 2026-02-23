@@ -1,5 +1,7 @@
 # MSVC Cita — Documentación
 
+> Nota de versión actual: este servicio ya no aplica filtros JWT ni reglas de seguridad en código; cualquier sección que mencione JWT, JwtTokenValidator o @PreAuthorize se considera documentación histórica.
+
 ## Propósito
 - Gestiona el ciclo de vida de citas médicas: creación, consulta, edición, cancelación y cambio de estado.
 - Orquesta datos de paciente y médico, y enlaza diagnósticos asociados.

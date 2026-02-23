@@ -30,13 +30,13 @@ public class MedicoServiceImpl implements MedicoService {
     @Override
     @Transactional(readOnly = true)
     public List<MedicoEntity> listar() {
-        return repository.findAll();
+        return repository.findAllWithHorarios();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<MedicoEntity> porId(Long id) {
-        return repository.findById(id);
+        return repository.findByIdWithHorarios(id);
     }
 
     @Override
