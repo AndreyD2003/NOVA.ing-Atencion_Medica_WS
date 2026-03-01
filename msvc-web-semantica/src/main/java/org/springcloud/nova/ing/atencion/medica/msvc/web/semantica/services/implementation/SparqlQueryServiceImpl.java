@@ -27,15 +27,9 @@ public class SparqlQueryServiceImpl implements SparqlQueryService {
     private RdfGraphService rdfGraphService;
 
     @Override
-    public List<Map<String, String>> ejecutarSelectPorCita(Long citaId, String sparql) {
-        Model model = rdfGraphService.construirModeloPorCitaId(citaId);
-        return ejecutarSelectInterno(model, sparql);
-    }
-
-    @Override
     public List<Map<String, String>> ejecutarSelectSistemaCompleto(String sparql) {
-        Model model = rdfGraphService.construirModeloSistemaCompleto();
-        return ejecutarSelectInterno(model, sparql);
+        // Delegar la ejecución al servicio de grafo que maneja la transacción
+        return rdfGraphService.ejecutarConsultaSparql(sparql);
     }
 
     private List<Map<String, String>> ejecutarSelectInterno(Model model, String sparql) {

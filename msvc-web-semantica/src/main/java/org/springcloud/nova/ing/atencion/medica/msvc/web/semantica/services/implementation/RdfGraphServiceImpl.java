@@ -1,9 +1,7 @@
 package org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.services.implementation;
 
-import org.apache.jena.rdf.model.InfModel;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.ReasonerRegistry;
 import org.apache.jena.riot.Lang;
@@ -14,7 +12,6 @@ import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.clients.CitaC
 import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.clients.DiagnosticoClientRest;
 import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.clients.MedicoClientRest;
 import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.clients.PacienteClientRest;
-import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.models.dto.GrafoClinicoDto;
 import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.models.dto.remote.CitaRemoteDto;
 import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.models.dto.remote.DiagnosticoRemoteDto;
 import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.models.dto.remote.MedicoRemoteDto;
@@ -22,7 +19,6 @@ import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.models.dto.re
 import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.models.dto.remote.HorarioRemoteDto;
 import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.semantic.RdfModelBuilder;
 import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.services.RdfGraphService;
-import org.springcloud.nova.ing.atencion.medica.msvc.web.semantica.services.SemanticGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +33,6 @@ public class RdfGraphServiceImpl implements RdfGraphService {
 
     private static final String ONTO = "http://nova.ing/ontology/";
     private static final String BASE_IRI = "http://nova.ing/atencion-medica/";
-
-    @Autowired
-    private SemanticGraphService semanticGraphService;
 
     @Autowired
     private RdfModelBuilder rdfModelBuilder;
@@ -57,72 +50,111 @@ public class RdfGraphServiceImpl implements RdfGraphService {
     private DiagnosticoClientRest diagnosticoClientRest;
 
     @Override
-    public Model construirModeloPorCitaId(Long citaId) {
-        GrafoClinicoDto grafo = semanticGraphService.construirGrafoPorCitaId(citaId);
-        Model base = rdfModelBuilder.fromGrafoClinico(grafo);
-        return aplicarRazonamientoOwl(base);
+    public void sincronizarDatosSistema() {
+        Dataset dataset = rdfModelBuilder.getDataset();
+        dataset.begin(ReadWrite.WRITE);
+        try {
+            Model model = dataset.getDefaultModel();
+            
+            // Opcional: Limpiar datos anteriores de instancias (manteniendo ontologia)
+            // model.removeAll(); 
+            // model.read("ontology/nova-ontology.owl"); // Recargar ontologia base
+            
+            // Para simplicidad, agregamos/actualizamos sobre lo existente.
+            // En produccion, deberias gestionar actualizaciones incrementales.
+
+            List<PacienteRemoteDto> pacientes = pacienteClientRest.listar();
+            Map<Long, Resource> recursosPacientes = new HashMap<>();
+            for (PacienteRemoteDto p : pacientes) {
+                if (p == null || p.getId() == null) {
+                    continue;
+                }
+                Resource r = crearRecursoPaciente(model, p);
+                recursosPacientes.put(p.getId(), r);
+            }
+
+            List<MedicoRemoteDto> medicos = medicoClientRest.listar();
+            Map<Long, Resource> recursosMedicos = new HashMap<>();
+            for (MedicoRemoteDto m : medicos) {
+                if (m == null || m.getId() == null) {
+                    continue;
+                }
+                Resource r = crearRecursoMedico(model, m);
+                recursosMedicos.put(m.getId(), r);
+            }
+
+            List<CitaRemoteDto> citas = citaClientRest.listarTodas();
+            Map<Long, Resource> recursosCitas = new HashMap<>();
+            for (CitaRemoteDto c : citas) {
+                if (c == null || c.getId() == null) {
+                    continue;
+                }
+                Resource paciente = c.getPacienteId() != null ? recursosPacientes.get(c.getPacienteId()) : null;
+                Resource medico = c.getMedicoId() != null ? recursosMedicos.get(c.getMedicoId()) : null;
+                Resource r = crearRecursoCita(model, c, paciente, medico);
+                recursosCitas.put(c.getId(), r);
+            }
+
+            List<DiagnosticoRemoteDto> diagnosticos = diagnosticoClientRest.listar();
+            for (DiagnosticoRemoteDto d : diagnosticos) {
+                if (d == null || d.getId() == null) {
+                    continue;
+                }
+                Resource cita = d.getCitaId() != null ? recursosCitas.get(d.getCitaId()) : null;
+                Resource paciente = d.getPacienteId() != null ? recursosPacientes.get(d.getPacienteId()) : null;
+                crearRecursoDiagnostico(model, d, cita, paciente);
+            }
+            
+            dataset.commit();
+        } catch (Exception e) {
+            dataset.abort();
+            throw e;
+        } finally {
+            dataset.end();
+        }
     }
 
     @Override
-    public String serializarModeloPorCitaId(Long citaId, String formato) {
-        Model model = construirModeloPorCitaId(citaId);
-        return serializar(model, formato);
+    public Model obtenerModeloLectura() {
+        Dataset dataset = rdfModelBuilder.getDataset();
+        dataset.begin(ReadWrite.READ);
+        try {
+            Model model = dataset.getDefaultModel();
+            // Retornamos el modelo con inferencia (solo lectura)
+            return aplicarRazonamientoOwl(model);
+        } finally {
+            dataset.end();
+        }
     }
 
     @Override
-    public Model construirModeloSistemaCompleto() {
-        Model model = rdfModelBuilder.createEmptyModel();
-        model.setNsPrefix("onto", ONTO);
-        model.setNsPrefix("am", BASE_IRI);
-
-        List<PacienteRemoteDto> pacientes = pacienteClientRest.listar();
-        Map<Long, Resource> recursosPacientes = new HashMap<>();
-        for (PacienteRemoteDto p : pacientes) {
-            if (p == null || p.getId() == null) {
-                continue;
+    public List<Map<String, String>> ejecutarConsultaSparql(String sparql) {
+        Dataset dataset = rdfModelBuilder.getDataset();
+        dataset.begin(ReadWrite.READ);
+        try {
+            Model model = dataset.getDefaultModel();
+            // Aplicar inferencia
+            Model inferido = aplicarRazonamientoOwl(model);
+            
+            try (QueryExecution qexec = QueryExecutionFactory.create(sparql, inferido)) {
+                ResultSet results = qexec.execSelect();
+                return ResultSetFormatter.toList(results).stream().map(sol -> {
+                    Map<String, String> map = new HashMap<>();
+                    sol.varNames().forEachRemaining(varName -> {
+                        RDFNode node = sol.get(varName);
+                        map.put(varName, node.toString());
+                    });
+                    return map;
+                }).collect(java.util.stream.Collectors.toList());
             }
-            Resource r = crearRecursoPaciente(model, p);
-            recursosPacientes.put(p.getId(), r);
+        } finally {
+            dataset.end();
         }
-
-        List<MedicoRemoteDto> medicos = medicoClientRest.listar();
-        Map<Long, Resource> recursosMedicos = new HashMap<>();
-        for (MedicoRemoteDto m : medicos) {
-            if (m == null || m.getId() == null) {
-                continue;
-            }
-            Resource r = crearRecursoMedico(model, m);
-            recursosMedicos.put(m.getId(), r);
-        }
-
-        List<CitaRemoteDto> citas = citaClientRest.listarTodas();
-        Map<Long, Resource> recursosCitas = new HashMap<>();
-        for (CitaRemoteDto c : citas) {
-            if (c == null || c.getId() == null) {
-                continue;
-            }
-            Resource paciente = c.getPacienteId() != null ? recursosPacientes.get(c.getPacienteId()) : null;
-            Resource medico = c.getMedicoId() != null ? recursosMedicos.get(c.getMedicoId()) : null;
-            Resource r = crearRecursoCita(model, c, paciente, medico);
-            recursosCitas.put(c.getId(), r);
-        }
-
-        List<DiagnosticoRemoteDto> diagnosticos = diagnosticoClientRest.listar();
-        for (DiagnosticoRemoteDto d : diagnosticos) {
-            if (d == null || d.getId() == null) {
-                continue;
-            }
-            Resource cita = d.getCitaId() != null ? recursosCitas.get(d.getCitaId()) : null;
-            Resource paciente = d.getPacienteId() != null ? recursosPacientes.get(d.getPacienteId()) : null;
-            crearRecursoDiagnostico(model, d, cita, paciente);
-        }
-
-        return aplicarRazonamientoOwl(model);
     }
 
     @Override
     public String serializarModeloSistemaCompleto(String formato) {
-        Model model = construirModeloSistemaCompleto();
+        Model model = obtenerModeloLectura();
         return serializar(model, formato);
     }
 

@@ -1,433 +1,25 @@
 {
 	"info": {
-		"_postman_id": "nova-atencion-medica-collection",
-		"name": "NOVA Atención Médica Microservices (Sin msvc-security)",
-		"description": "Colección de pruebas para los microservicios de NOVA Atención Médica (pacientes, médicos, citas, diagnósticos y Web Semántica). Esta versión ya no incluye el microservicio de seguridad (msvc-security) ni pruebas relacionadas con autenticación JWT.",
+		"_postman_id": "nova-ing-pruebas-v2",
+		"name": "NOVA.ing - Atencion Medica (Completo)",
+		"description": "Coleccion de pruebas para todos los microservicios del sistema NOVA, incluyendo Web Semantica y Gemini.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
-	"variable": [
-		{
-			"key": "url_cita",
-			"value": "http://localhost:8081",
-			"type": "string"
-		},
-		{
-			"key": "url_diagnostico",
-			"value": "http://localhost:8082",
-			"type": "string"
-		},
-		{
-			"key": "url_medico",
-			"value": "http://localhost:8080",
-			"type": "string"
-		},
-		{
-			"key": "url_paciente",
-			"value": "http://localhost:8083",
-			"type": "string"
-		},
-		{
-			"key": "url_semantic",
-			"value": "http://localhost:8084",
-			"type": "string"
-		}
-	],
 	"item": [
 		{
-			"name": "Pacientes",
-			"item": [
-				{
-					"name": "Listar Pacientes",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_paciente}}/pacientes",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes"
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener Paciente",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_paciente}}/pacientes/1",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Crear Paciente",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"paciente\": {\n        \"nombres\": \"Nuevo Paciente\",\n        \"apellidos\": \"Apellido Nuevo\",\n        \"email\": \"newpatient@email.com\",\n        \"dni\": \"12345678\",\n        \"fechaNacimiento\": \"2000-01-01T00:00:00.000+00:00\",\n        \"genero\": \"MASCULINO\",\n        \"telefono\": \"987654321\",\n        \"direccion\": \"Calle Falsa 123\",\n        \"estado\": \"ACTIVO\"\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_paciente}}/pacientes",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes"
-							]
-						}
-					}
-				},
-				{
-					"name": "Editar Paciente",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"nombres\": \"Paciente Editado\",\n    \"apellidos\": \"Apellido Editado\",\n    \"email\": \"editedpatient@email.com\",\n    \"dni\": \"12345678\",\n    \"fechaNacimiento\": \"2000-01-01T00:00:00.000+00:00\",\n    \"genero\": \"FEMENINO\",\n    \"telefono\": \"987654321\",\n    \"direccion\": \"Calle Verdadera 456\",\n    \"estado\": \"ACTIVO\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_paciente}}/pacientes/1",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Paciente (Soft)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url_paciente}}/pacientes/1",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Paciente (Force)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url_paciente}}/pacientes/1/force",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes",
-								"1",
-								"force"
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener Citas de Paciente",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_paciente}}/pacientes/1/citas",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes",
-								"1",
-								"citas"
-							]
-						}
-					}
-				},
-				{
-					"name": "Agendar Cita (desde Paciente)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Creación de cita desde paciente (201 CREATED)', function () {",
-									"    pm.response.to.have.status(201);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"fechaCita\": \"2024-12-31T00:00:00.000+00:00\",\n    \"horaInicio\": \"10:00:00\",\n    \"horaFin\": \"10:30:00\",\n    \"motivo\": \"Consulta desde Paciente\",\n    \"estado\": \"PROGRAMADA\",\n    \"pacienteId\": 1,\n    \"medicoId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_paciente}}/pacientes/agendar-cita",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes",
-								"agendar-cita"
-							]
-						}
-					}
-				},
-				{
-					"name": "Historial Medico",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_paciente}}/pacientes/1/historial-medico",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes",
-								"1",
-								"historial-medico"
-							]
-						}
-					}
-				},
-				{
-					"name": "Cambiar estado cita (por paciente)",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"if (pm.environment.get('token_patient')) {",
-									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + pm.environment.get('token_patient')});",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Cambiar estado por paciente -> 200 OK', function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"estado\": \"CANCELADA\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_paciente}}/pacientes/1/citas/1/estado",
-							"host": [
-								"{{url_paciente}}"
-							],
-							"path": [
-								"pacientes",
-								"1",
-								"citas",
-								"1",
-								"estado"
-							]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Medicos",
+			"name": "MSVC-Medico (8080)",
 			"item": [
 				{
 					"name": "Listar Medicos",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url_medico}}/medicos",
-							"host": [
-								"{{url_medico}}"
-							],
-							"path": [
-								"medicos"
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener Medico",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_medico}}/medicos/1",
-							"host": [
-								"{{url_medico}}"
-							],
-							"path": [
-								"medicos",
-								"1"
-							]
+							"raw": "http://localhost:8080/medicos",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["medicos"]
 						}
 					}
 				},
@@ -435,1143 +27,252 @@
 					"name": "Crear Medico",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"medico\": {\n        \"nombres\": \"Nuevo Medico\",\n        \"apellidos\": \"Apellido Medico\",\n        \"email\": \"newdoctor@email.com\",\n        \"dni\": \"87654321\",\n        \"telefono\": \"912345678\",\n        \"especialidad\": \"CARDIOLOGIA\",\n        \"estado\": \"ACTIVO\"\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"nombres\": \"Gregory\",\n    \"apellidos\": \"House\",\n    \"especialidad\": \"MEDICINA_GENERAL\",\n    \"telefono\": \"987654321\",\n    \"email\": \"house@hospital.com\",\n    \"dni\": \"12345678\",\n    \"estado\": \"ACTIVO\"\n}"
 						},
 						"url": {
-							"raw": "{{url_medico}}/medicos",
-							"host": [
-								"{{url_medico}}"
-							],
-							"path": [
-								"medicos"
-							]
+							"raw": "http://localhost:8080/medicos",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["medicos"]
 						}
 					}
 				},
 				{
-					"name": "Editar Medico",
+					"name": "Detalle Medico",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"nombres\": \"Medico Editado\",\n    \"apellidos\": \"Apellido Editado\",\n    \"email\": \"editeddoctor@email.com\",\n    \"dni\": \"87654321\",\n    \"telefono\": \"912345678\",\n    \"especialidad\": \"PEDIATRIA\",\n    \"estado\": \"ACTIVO\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_medico}}/medicos/1",
-							"host": [
-								"{{url_medico}}"
-							],
-							"path": [
-								"medicos",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Medico (Soft)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url_medico}}/medicos/1",
-							"host": [
-								"{{url_medico}}"
-							],
-							"path": [
-								"medicos",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Medico (Force)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url_medico}}/medicos/1/force",
-							"host": [
-								"{{url_medico}}"
-							],
-							"path": [
-								"medicos",
-								"1",
-								"force"
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener Citas de Medico",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url_medico}}/medicos/1/citas",
-							"host": [
-								"{{url_medico}}"
-							],
-							"path": [
-								"medicos",
-								"1",
-								"citas"
-							]
-						}
-					}
-				},
-				{
-					"name": "Agendar Cita (desde Medico)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"fechaCita\": \"2024-12-31T00:00:00.000+00:00\",\n    \"horaInicio\": \"10:00:00\",\n    \"horaFin\": \"10:30:00\",\n    \"motivo\": \"Consulta desde Medico\",\n    \"estado\": \"PROGRAMADA\",\n    \"pacienteId\": 1,\n    \"medicoId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_medico}}/medicos/agendar-cita",
-							"host": [
-								"{{url_medico}}"
-							],
-							"path": [
-								"medicos",
-								"agendar-cita"
-							]
-						}
-					}
-				},
-				{
-					"name": "Registrar Diagnostico (desde Medico)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"descripcion\": \"Diagnostico desde Medico\",\n    \"tipoDiagnostico\": \"DEFINITIVO\",\n    \"fechaDiagnostico\": \"2024-12-31T00:00:00.000+00:00\",\n    \"citaId\": 1,\n    \"pacienteId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_medico}}/medicos/registrar-diagnostico",
-							"host": [
-								"{{url_medico}}"
-							],
-							"path": [
-								"medicos",
-								"registrar-diagnostico"
-							]
+							"raw": "http://localhost:8080/medicos/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["medicos", "1"]
 						}
 					}
 				}
 			]
 		},
 		{
-			"name": "Citas",
+			"name": "MSVC-Paciente (8083)",
+			"item": [
+				{
+					"name": "Listar Pacientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8083/pacientes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8083",
+							"path": ["pacientes"]
+						}
+					}
+				},
+				{
+					"name": "Crear Paciente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombres\": \"Juan\",\n    \"apellidos\": \"Perez\",\n    \"fechaNacimiento\": \"1990-05-15\",\n    \"genero\": \"MASCULINO\",\n    \"dni\": \"87654321\",\n    \"telefono\": \"912345678\",\n    \"email\": \"juan.perez@email.com\",\n    \"direccion\": \"Av. Siempre Viva 123\",\n    \"estado\": \"ACTIVO\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8083/pacientes",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8083",
+							"path": ["pacientes"]
+						}
+					}
+				},
+				{
+					"name": "Agendar Cita (Desde Paciente)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fechaCita\": \"2023-12-01\",\n    \"horaInicio\": \"10:00:00\",\n    \"horaFin\": \"10:30:00\",\n    \"motivo\": \"Dolor de cabeza persistente\",\n    \"estado\": \"PENDIENTE\",\n    \"pacienteId\": 1,\n    \"medicoId\": 1\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8083/pacientes/agendar-cita",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8083",
+							"path": ["pacientes", "agendar-cita"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "MSVC-Cita (8081)",
 			"item": [
 				{
 					"name": "Listar Citas",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url_cita}}/citas",
-							"host": [
-								"{{url_cita}}"
-							],
-							"path": [
-								"citas"
-							]
+							"raw": "http://localhost:8081/citas",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["citas"]
 						}
 					}
 				},
 				{
-					"name": "Obtener Cita",
+					"name": "Detalle Cita Completo (Feign)",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url_cita}}/citas/1",
-							"host": [
-								"{{url_cita}}"
-							],
-							"path": [
-								"citas",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener Cita con Detalle",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_cita}}/citas/con-detalle/1",
-							"host": [
-								"{{url_cita}}"
-							],
-							"path": [
-								"citas",
-								"con-detalle",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Listar Citas por Paciente",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_cita}}/citas/paciente/1",
-							"host": [
-								"{{url_cita}}"
-							],
-							"path": [
-								"citas",
-								"paciente",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Listar Citas por Medico",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_cita}}/citas/medico/1",
-							"host": [
-								"{{url_cita}}"
-							],
-							"path": [
-								"citas",
-								"medico",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Crear Cita",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"fechaCita\": \"2024-12-31T00:00:00.000+00:00\",\n    \"horaInicio\": \"10:00:00\",\n    \"horaFin\": \"10:30:00\",\n    \"motivo\": \"Consulta General\",\n    \"estado\": \"PROGRAMADA\",\n    \"pacienteId\": 1,\n    \"medicoId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_cita}}/citas",
-							"host": [
-								"{{url_cita}}"
-							],
-							"path": [
-								"citas"
-							]
-						}
-					}
-				},
-				{
-					"name": "Editar Cita",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"fechaCita\": \"2024-12-31T00:00:00.000+00:00\",\n    \"horaInicio\": \"11:00:00\",\n    \"horaFin\": \"11:30:00\",\n    \"motivo\": \"Consulta General Editada\",\n    \"estado\": \"PROGRAMADA\",\n    \"pacienteId\": 1,\n    \"medicoId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_cita}}/citas/1",
-							"host": [
-								"{{url_cita}}"
-							],
-							"path": [
-								"citas",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Cita (Soft)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url_cita}}/citas/1",
-							"host": [
-								"{{url_cita}}"
-							],
-							"path": [
-								"citas",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Cita (Force)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url_cita}}/citas/1/force",
-							"host": [
-								"{{url_cita}}"
-							],
-							"path": [
-								"citas",
-								"1",
-								"force"
-							]
+							"raw": "http://localhost:8081/citas/con-detalle/1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8081",
+							"path": ["citas", "con-detalle", "1"]
 						}
 					}
 				}
 			]
 		},
 		{
-			"name": "Diagnosticos",
+			"name": "MSVC-Diagnostico (8082)",
 			"item": [
-				{
-					"name": "Listar Diagnosticos",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos"
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener Diagnostico",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos/1",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener Diagnostico con Detalle",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos/con-detalle/1",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos",
-								"con-detalle",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Listar Diagnosticos por Cita",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos/cita/1",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos",
-								"cita",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Listar Diagnosticos por Paciente",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos/paciente/1",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos",
-								"paciente",
-								"1"
-							]
-						}
-					}
-				},
 				{
 					"name": "Crear Diagnostico",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"descripcion\": \"Diagnostico Directo\",\n    \"tipoDiagnostico\": \"DEFINITIVO\",\n    \"fechaDiagnostico\": \"2024-12-31T00:00:00.000+00:00\",\n    \"citaId\": 1,\n    \"pacienteId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"descripcion\": \"Migraña severa por estrés\",\n    \"tipoDiagnostico\": \"ENFERMEDAD_CRONICA\",\n    \"fechaDiagnostico\": \"2023-12-01T10:30:00.000Z\",\n    \"citaId\": 1,\n    \"pacienteId\": 1\n}"
 						},
 						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos"
-							]
+							"raw": "http://localhost:8082/diagnosticos",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["diagnosticos"]
 						}
 					}
 				},
 				{
-					"name": "Editar Diagnostico",
+					"name": "Listar Diagnosticos",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"descripcion\": \"Diagnostico Editado\",\n    \"tipoDiagnostico\": \"DEFINITIVO\",\n    \"fechaDiagnostico\": \"2024-12-31T00:00:00.000+00:00\",\n    \"citaId\": 1,\n    \"pacienteId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos/1",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Diagnostico (Soft)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
+						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos/1",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Eliminar Diagnostico (Force)",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos/1/force",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos",
-								"1",
-								"force"
-							]
+							"raw": "http://localhost:8082/diagnosticos",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8082",
+							"path": ["diagnosticos"]
 						}
 					}
 				}
 			]
 		},
 		{
-			"name": "Web Semantica",
+			"name": "MSVC-Web-Semantica (8084)",
 			"item": [
 				{
-					"name": "Obtener grafo clínico (JSON)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{url_semantic}}/semantic/grafo/cita/1",
-							"host": [
-								"{{url_semantic}}"
-							],
-							"path": [
-								"semantic",
-								"grafo",
-								"cita",
-								"1"
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener grafo RDF (TURTLE)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "text/turtle"
-							}
-						],
-						"url": {
-							"raw": "{{url_semantic}}/semantic/grafo/cita/1/rdf?formato=TURTLE",
-							"host": [
-								"{{url_semantic}}"
-							],
-							"path": [
-								"semantic",
-								"grafo",
-								"cita",
-								"1",
-								"rdf"
-							],
-							"query": [
-								{
-									"key": "formato",
-									"value": "TURTLE"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener grafo RDF (JSON-LD)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/ld+json"
-							}
-						],
-						"url": {
-							"raw": "{{url_semantic}}/semantic/grafo/cita/1/rdf?formato=JSONLD",
-							"host": [
-								"{{url_semantic}}"
-							],
-							"path": [
-								"semantic",
-								"grafo",
-								"cita",
-								"1",
-								"rdf"
-							],
-							"query": [
-								{
-									"key": "formato",
-									"value": "JSONLD"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Ejecutar SPARQL sobre cita",
+					"name": "1. Sincronizar Datos (TDB2)",
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/sparql-query"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10"
-						},
-						"url": {
-							"raw": "{{url_semantic}}/semantic/grafo/cita/1/sparql",
-							"host": [
-								"{{url_semantic}}"
-							],
-							"path": [
-								"semantic",
-								"grafo",
-								"cita",
-								"1",
-								"sparql"
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener grafo RDF sistema completo (TURTLE)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "text/turtle"
-							}
-						],
-						"url": {
-							"raw": "{{url_semantic}}/semantic/grafo/sistema/rdf?formato=TURTLE",
-							"host": [
-								"{{url_semantic}}"
-							],
-							"path": [
-								"semantic",
-								"grafo",
-								"sistema",
-								"rdf"
-							],
-							"query": [
-								{
-									"key": "formato",
-									"value": "TURTLE"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Obtener grafo RDF sistema completo (JSON-LD)",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/ld+json"
-							}
-						],
-						"url": {
-							"raw": "{{url_semantic}}/semantic/grafo/sistema/rdf?formato=JSONLD",
-							"host": [
-								"{{url_semantic}}"
-							],
-							"path": [
-								"semantic",
-								"grafo",
-								"sistema",
-								"rdf"
-							],
-							"query": [
-								{
-									"key": "formato",
-									"value": "JSONLD"
-								}
-							]
-						}
-					}
-				},
-				{
-					"name": "Ejecutar SPARQL sobre sistema completo",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/sparql-query"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "SELECT ?s ?p ?o WHERE { ?s ?p ?o } LIMIT 10"
-						},
-						"url": {
-							"raw": "{{url_semantic}}/semantic/grafo/sistema/sparql",
-							"host": [
-								"{{url_semantic}}"
-							],
-							"path": [
-								"semantic",
-								"grafo",
-								"sistema",
-								"sparql"
-							]
-						}
-					}
-				},
-				{
-					"name": "Consulta en lenguaje natural",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"pregunta\": \"medicos con especialidad en medicina general\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{url_semantic}}/semantic/nl/query",
-							"host": [
-								"{{url_semantic}}"
-							],
-							"path": [
-								"semantic",
-								"nl",
-								"query"
-							]
-						}
-					}
-				}
-			]
-		},
-		{
-			"name": "Security Tests (msvc-security eliminado)",
-			"item": [
-				{
-					"name": "Unauthenticated - GET Diagnosticos (expect 200 sin seguridad)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Status es 200 (seguridad deshabilitada)', function () {",
-									"    pm.response.to.have.status(200);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos"
-							]
-						}
+							"raw": "http://localhost:8084/api/semantic/data/sync",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8084",
+							"path": ["api", "semantic", "data", "sync"]
+						},
+						"description": "Descarga datos de todos los microservicios y actualiza la base de datos RDF local."
 					}
 				},
-
-
 				{
-					"name": "Create Diagnostico as Patient (expect 201 sin seguridad)",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"// set Authorization header from token_patient if present",
-									"if (pm.environment.get('token_patient')) {",
-									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + pm.environment.get('token_patient')});",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Paciente puede crear diagnostico (201)', function () {",
-									"    pm.response.to.have.status(201);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-						],
+					"name": "2. Consulta Natural (Gemini)",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"descripcion\": \"Intento desde paciente\",\n  \"tipoDiagnostico\": \"PROVISIONAL\",\n  \"fechaDiagnostico\": \"2025-12-31T00:00:00.000+00:00\",\n  \"citaId\": 1,\n  \"pacienteId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"pregunta\": \"¿Cuales son los pacientes diagnosticados con enfermedad cronica?\"\n}"
 						},
 						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos"
-							]
+							"raw": "http://localhost:8084/api/semantic/nlp/query",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8084",
+							"path": ["api", "semantic", "nlp", "query"]
 						}
 					}
 				},
-
-
 				{
-					"name": "Create Diagnostico as Doctor (expect 201)",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"// set Authorization header from token_doctor if present",
-									"if (pm.environment.get('token_doctor')) {",
-									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + pm.environment.get('token_doctor')});",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test('Doctor can create diagnostico (201)', function () {",
-									"    pm.response.to.have.status(201);",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-						],
+					"name": "3. Consulta SPARQL Directa",
 					"request": {
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/json",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"descripcion\": \"Diagnostico desde doctor\",\n  \"tipoDiagnostico\": \"DEFINITIVO\",\n  \"fechaDiagnostico\": \"2025-12-31T00:00:00.000+00:00\",\n  \"citaId\": 1,\n  \"pacienteId\": 1\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							"raw": "{\n    \"query\": \"PREFIX onto: <http://nova.ing/ontology/> SELECT ?nombre ?apellido WHERE { ?p a onto:Paciente ; onto:nombres ?nombre ; onto:apellidos ?apellido . }\"\n}"
 						},
 						"url": {
-							"raw": "{{url_diagnostico}}/diagnosticos",
-							"host": [
-								"{{url_diagnostico}}"
-							],
-							"path": [
-								"diagnosticos"
-							]
+							"raw": "http://localhost:8084/api/semantic/sparql/query",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8084",
+							"path": ["api", "semantic", "sparql", "query"]
 						}
 					}
 				}
 			]
-			}
+		}
 	]
 }
