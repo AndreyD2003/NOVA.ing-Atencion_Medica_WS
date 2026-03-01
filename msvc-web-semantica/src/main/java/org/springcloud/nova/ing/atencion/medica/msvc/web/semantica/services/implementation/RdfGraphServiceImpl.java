@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import java.util.stream.Collectors;
+import org.apache.jena.rdf.model.Statement;
+
 @Service
 public class RdfGraphServiceImpl implements RdfGraphService {
 
@@ -56,13 +59,25 @@ public class RdfGraphServiceImpl implements RdfGraphService {
         try {
             Model model = dataset.getDefaultModel();
             
-            // Opcional: Limpiar datos anteriores de instancias (manteniendo ontologia)
-            // model.removeAll(); 
-            // model.read("ontology/nova-ontology.owl"); // Recargar ontologia base
+            // 1. Limpiar SOLO las instancias (tripletas generadas a partir de la base de datos)
+            // Manteniendo la estructura ontológica base si es que está cargada en el mismo modelo.
+            // Para asegurar una sincronización limpia, eliminamos todos los recursos que empiecen con nuestra BASE_IRI
+            // Esto asume que BASE_IRI ("http://nova.ing/atencion-medica/") se usa solo para instancias de datos
             
-            // Para simplicidad, agregamos/actualizamos sobre lo existente.
-            // En produccion, deberias gestionar actualizaciones incrementales.
+            // Opción A: Si el modelo contiene SOLO datos y la ontología está en otro lado o se carga siempre:
+            // model.removeAll(); 
+            // model.read("ontology/nova-ontology.owl"); 
 
+            // Opción B (Más segura): Eliminar selectivamente los recursos de datos
+            List<Statement> statementsToRemove = model.listStatements().toList()
+                .stream()
+                .filter(stmt -> stmt.getSubject().isURIResource() && 
+                               stmt.getSubject().getURI().startsWith(BASE_IRI))
+                .collect(java.util.stream.Collectors.toList());
+            
+            model.remove(statementsToRemove);
+            
+            // 2. Cargar datos frescos desde los microservicios
             List<PacienteRemoteDto> pacientes = pacienteClientRest.listar();
             Map<Long, Resource> recursosPacientes = new HashMap<>();
             for (PacienteRemoteDto p : pacientes) {
