@@ -142,7 +142,27 @@ public class RdfGraphServiceImpl implements RdfGraphService {
                     Map<String, String> map = new HashMap<>();
                     sol.varNames().forEachRemaining(varName -> {
                         RDFNode node = sol.get(varName);
-                        map.put(varName, node.toString());
+                        if (node == null) {
+                            map.put(varName, null);
+                        } else if (node.isLiteral()) {
+                            map.put(varName, node.asLiteral().getString());
+                        } else if (node.isResource()) {
+                            String uri = node.asResource().getURI();
+                            // Limpiar URI si pertenece a nuestra ontología o base IRI
+                            if (uri != null) {
+                                if (uri.startsWith(ONTO)) {
+                                    map.put(varName, uri.replace(ONTO, ""));
+                                } else if (uri.startsWith(BASE_IRI)) {
+                                    map.put(varName, uri.replace(BASE_IRI, ""));
+                                } else {
+                                    map.put(varName, uri);
+                                }
+                            } else {
+                                map.put(varName, node.toString());
+                            }
+                        } else {
+                            map.put(varName, node.toString());
+                        }
                     });
                     return map;
                 }).collect(java.util.stream.Collectors.toList());
