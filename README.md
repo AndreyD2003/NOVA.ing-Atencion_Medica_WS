@@ -1,115 +1,209 @@
-# NOVA_ing-AtencionMedica - Arquitectura de Microservicios
+# NOVA Atención Médica — Microservicios y Web Semántica
 
-Este proyecto implementa una arquitectura de microservicios para la gestión de atención médica, integrando servicios de Pacientes, Médicos, Citas, Diagnósticos y Web Semántica.
+Sistema distribuido para la gestión de atención médica con cinco microservicios de dominio y una capa semántica basada en RDF/OWL/SPARQL.
 
-## 1. Arquitectura y Diseño
+## Descripción del proyecto
 
-### Estructura de Microservicios
-El sistema está dividido en dominios funcionales claros, cada uno con su propia base de datos y responsabilidad única:
+El proyecto implementa un backend por dominios para:
 
-*   **msvc-paciente**: Gestiona la información de los pacientes.
-*   **msvc-medico**: Gestiona la información de los médicos, incluyendo sus especialidades.
-*   **msvc-cita**: Núcleo de la operación, gestiona el agendamiento y coordina la relación entre médicos y pacientes.
-*   **msvc-diagnostico**: Gestiona los resultados y diagnósticos derivados de las citas médicas.
-*   **msvc-web-semantica**: Expone vistas semánticas (RDF/OWL) y consultas SPARQL sobre los datos clínicos.
+- Gestión de pacientes.
+- Gestión de médicos y horarios.
+- Gestión de citas con validación de solapes.
+- Gestión de diagnósticos asociados a cita y paciente.
+- Exposición semántica de datos clínicos y consultas SPARQL.
 
-### Relaciones y Comunicación (Refactorización)
+El enfoque actual es académico/técnico y no incluye autenticación/autorización activa en los controladores.
 
-Se ha implementado un patrón de comunicación **bidireccional síncrona** utilizando **OpenFeign** (Spring Cloud OpenFeign), basándose en los patrones observados en el proyecto de referencia `proyecto-integracion`. Esto permite mantener la integridad referencial lógica y enriquecer las respuestas de la API sin acoplar las bases de datos.
+## Arquitectura
 
-#### Diagrama de Relaciones Lógicas
+### Microservicios
+
+- **msvc-paciente** (`8083`): CRUD de pacientes, historial clínico y operaciones sobre citas del paciente.
+- **msvc-medico** (`8080`): CRUD de médicos, horarios, agenda y registro de diagnósticos.
+- **msvc-cita** (`8081`): núcleo de agendamiento, conflictos de horario y detalle agregado de cita.
+- **msvc-diagnostico** (`8082`): CRUD de diagnósticos y consultas por cita/paciente.
+- **msvc-web-semantica** (`8084`): construcción de grafos semánticos, serialización RDF y ejecución SPARQL.
+
+### Comunicación
+
+- Comunicación síncrona HTTP entre servicios con **Spring Cloud OpenFeign**.
+- Agregación de datos por composición de respuestas (por ejemplo, cita + paciente + médico + diagnósticos).
+- La capa semántica consume los MSVC operacionales para construir un modelo de conocimiento unificado.
+
+### Diagrama lógico
 
 ```mermaid
-graph TD
-    User((Usuario))
-    
-    subgraph NOVA System
-        Paciente[msvc-paciente]
-        Medico[msvc-medico]
-        Cita[msvc-cita]
-        Diagnostico[msvc-diagnostico]
-    end
+flowchart LR
+  U[Cliente API] --> PAC[msvc-paciente]
+  U --> MED[msvc-medico]
+  U --> CIT[msvc-cita]
+  U --> DIA[msvc-diagnostico]
+  U --> SEM[msvc-web-semantica]
 
-    User --> Paciente
-    User --> Medico
-    User --> Cita
-    User --> Diagnostico
-
-    %% Relaciones Bidireccionales Implementadas
-    Cita -- Feign Client --> Paciente
-    Cita -- Feign Client --> Medico
-    Cita -- Feign Client --> Diagnostico
-    
-    Paciente -- Feign Client --> Cita
-    Medico -- Feign Client --> Cita
-    Diagnostico -- Feign Client --> Cita
-    Diagnostico -- Feign Client --> Paciente
+  PAC --> CIT
+  PAC --> DIA
+  MED --> CIT
+  MED --> DIA
+  CIT --> PAC
+  CIT --> MED
+  CIT --> DIA
+  DIA --> CIT
+  DIA --> PAC
+  SEM --> PAC
+  SEM --> MED
+  SEM --> CIT
+  SEM --> DIA
 ```
 
-### Justificación de Decisiones de Diseño
+## Tecnologías utilizadas
 
-1.  **Comunicación con Feign Clients**: Se eligió Feign sobre RestTemplate o WebClient por su naturaleza declarativa y facilidad de integración con Spring Boot, como se observa en `proyecto-integracion`. Esto simplifica el código y mejora la legibilidad.
-    
-2.  **Uso de DTOs (Data Transfer Objects)**: Para evitar exponer las entidades JPA directamente y desacoplar el modelo de dominio interno de la API pública, se crearon DTOs específicos (ej. `CitaDetalle`, `DiagnosticoDetalle`) en cada microservicio que consume datos de otros. Esto previene ciclos de dependencia en la serialización JSON y permite moldear la respuesta según la necesidad del cliente.
+- **Java 25**
+- **Spring Boot 3.5.9**
+- **Spring Cloud 2025.0.1**
+- **Spring Data JPA**
+- **OpenFeign**
+- **Lombok**
+- **Apache Jena 5.6.0**
+- **OWL API 5.1.20**
+- **Motores de datos**:
+  - MySQL (msvc-medico, msvc-cita)
+  - PostgreSQL (msvc-paciente, msvc-diagnostico, msvc-web-semantica)
 
-3.  **Relaciones Bidireccionales**:
-    *   **Cita -> Paciente/Medico**: Una cita necesita mostrar detalles completos del paciente y médico, no solo sus IDs.
-    *   **Paciente/Medico -> Cita**: Es fundamental para el historial médico poder consultar "todas las citas de un paciente" o "todas las citas de un médico" desde sus respectivos servicios.
-    *   **Diagnostico -> Cita/Paciente**: Un diagnóstico está intrínsecamente ligado a una cita y pertenece a un paciente.
-4.  **Capa de Web Semántica**:
-    *   **msvc-web-semantica** construye grafos RDF/OWL a partir de los MSVC de dominio y expone endpoints especializados (por ejemplo, JSON-LD y consultas SPARQL) para evidenciar el uso de Web Semántica.
+## Requisitos de instalación
 
-## 2. Implementación Técnica
+- JDK 25 disponible en `PATH`.
+- Maven Wrapper (incluido en cada MSVC).
+- Instancias de base de datos locales:
+  - MySQL en `localhost:3306`
+  - PostgreSQL en `localhost:5432`
+- Esquemas esperados:
+  - `msvc_medicos`
+  - `msvc_citas`
+  - `msvc_pacientes`
+  - `msvc_diagnosticos`
+  - `msvc_web_semantica`
 
-### Tecnologías Clave
-*   **Java 25**
-*   **Spring Boot 3.5.9**
-*   **Spring Cloud 2025.0.1** (OpenFeign)
-*   **PostgreSQL / MySQL** (Drivers)
-*   **Lombok**
-*   **Apache Jena** (RDF, SPARQL)
-*   **OWL API** (Ontologías OWL)
+## Configuración
 
-### Endpoints Principales y Flujos
+La configuración actual está en `src/main/resources/application.properties` de cada microservicio:
 
-#### msvc-cita
-*   `GET /citas/con-detalle/{id}`: Obtiene una cita y enriquece la respuesta consultando a `msvc-paciente`, `msvc-medico` y `msvc-diagnostico`.
-*   `GET /citas/paciente/{id}`: Usado por `msvc-paciente` para obtener historial.
-*   `GET /citas/medico/{id}`: Usado por `msvc-medico` para obtener agenda.
+- Credenciales por defecto:
+  - MySQL: `root/admin`
+  - PostgreSQL: `postgres/admin`
+- Persistencia:
+  - `spring.jpa.hibernate.ddl-auto=create-drop`
+  - `spring.jpa.show-sql=true`
 
-#### msvc-paciente
-*   `GET /pacientes/{id}/citas`: Consulta a `msvc-cita` para devolver el paciente junto con su historial de citas.
+Para entornos reales, mover credenciales a variables de entorno o secretos y ajustar `ddl-auto`.
 
-#### msvc-medico
-*   `GET /medicos/{id}/citas`: Consulta a `msvc-cita` para devolver el médico junto con sus citas programadas.
+## Instrucciones de uso
 
-#### msvc-diagnostico
-*   `GET /diagnosticos/con-detalle/{id}`: Obtiene el diagnóstico y recupera la información de la cita y el paciente asociados.
-
-## 3. Ejecución
-
-Para ejecutar el proyecto, asegúrese de tener configuradas las bases de datos (o usar H2/Docker si aplica) y ejecute cada microservicio:
+### 1) Compilación global (raíz)
 
 ```bash
-# En terminales separadas
-cd msvc-paciente && ./mvnw spring-boot:run
-cd msvc-medico && ./mvnw spring-boot:run
-cd msvc-cita && ./mvnw spring-boot:run
-cd msvc-diagnostico && ./mvnw spring-boot:run
-cd msvc-web-semantica && ./mvnw spring-boot:run
+mvn clean install
 ```
 
-> Nota: esta versión del proyecto no implementa autenticación ni autorización; todos los endpoints están abiertos con fines académicos para centrarse en la integración de microservicios y Web Semántica.
-
-## 4. Pruebas y Verificación
-
-Se han incluido pruebas de integración básicas para verificar la carga del contexto de Spring y la configuración de los clientes Feign.
-
-### Ejecución de Pruebas
-Para ejecutar las pruebas en un microservicio específico (ej. `msvc-cita`):
+### 2) Levantar servicios (una terminal por MSVC)
 
 ```bash
-./mvnw test -pl msvc-cita
+cd msvc-medico && mvnw.cmd spring-boot:run
+cd msvc-cita && mvnw.cmd spring-boot:run
+cd msvc-paciente && mvnw.cmd spring-boot:run
+cd msvc-diagnostico && mvnw.cmd spring-boot:run
+cd msvc-web-semantica && mvnw.cmd spring-boot:run
 ```
 
-Las pruebas utilizan una base de datos en memoria H2 para aislar el entorno y verificar la integridad de la configuración JPA y los beans de la aplicación sin dependencias externas.
+### 3) Endpoints de referencia
+
+- **Pacientes**: `/pacientes`, `/pacientes/{id}`, `/pacientes/{id}/citas`, `/pacientes/{id}/historial-medico`
+- **Médicos**: `/medicos`, `/medicos/{id}`, `/medicos/{id}/citas`, `/medicos/agendar-cita`
+- **Citas**: `/citas`, `/citas/{id}`, `/citas/con-detalle/{id}`, `/citas/paciente/{id}`, `/citas/medico/{id}`
+- **Diagnósticos**: `/diagnosticos`, `/diagnosticos/{id}`, `/diagnosticos/con-detalle/{id}`, `/diagnosticos/cita/{id}`
+- **Web semántica**:
+  - `/semantic/grafo/cita/{id}`
+  - `/semantic/grafo/cita/{id}/rdf?formato=TURTLE|RDFXML|JSONLD`
+  - `/semantic/grafo/sistema/rdf?formato=TURTLE|RDFXML|JSONLD`
+  - `/semantic/grafo/sistema/sparql`
+  - `/semantic/nl/query`
+
+### 4) Ejemplos rápidos
+
+```bash
+curl http://localhost:8081/citas/con-detalle/1
+```
+
+```bash
+curl "http://localhost:8084/semantic/grafo/sistema/rdf?formato=JSONLD"
+```
+
+```bash
+curl -X POST http://localhost:8084/semantic/nl/query \
+  -H "Content-Type: application/json" \
+  -d "{\"pregunta\":\"lista citas del medico 1\"}"
+```
+
+## Estructura del código
+
+```text
+/
+├─ pom.xml
+├─ README.md
+├─ documentacion/
+│  ├─ 00-Documentacion-General.md
+│  ├─ msvc-paciente.md
+│  ├─ msvc-medico.md
+│  ├─ msvc-cita.md
+│  ├─ msvc-diagnostico.md
+│  ├─ msvc-web-semantica.md
+│  ├─ 01-Guia-Web-Semantica-Para-Principiantes.md
+│  └─ glosario.md
+├─ msvc-paciente/
+├─ msvc-medico/
+├─ msvc-cita/
+├─ msvc-diagnostico/
+└─ msvc-web-semantica/
+```
+
+Patrón dominante por servicio:
+
+- `controllers`: API REST.
+- `services`: reglas de negocio.
+- `repositories`: acceso JPA.
+- `models/entities`: persistencia.
+- `models/dto`: contratos de intercambio.
+- `clients`: integración Feign con otros MSVC.
+
+## Pruebas y validación
+
+Ejecutar pruebas por módulo:
+
+```bash
+mvn test -pl msvc-paciente
+mvn test -pl msvc-medico
+mvn test -pl msvc-cita
+mvn test -pl msvc-diagnostico
+mvn test -pl msvc-web-semantica
+```
+
+## Guía de contribución
+
+### Flujo recomendado
+
+1. Crear rama de trabajo (`feature/*`, `fix/*`, `docs/*`).
+2. Implementar cambios manteniendo separación por dominio.
+3. Ejecutar compilación y pruebas del/los módulo(s) afectados.
+4. Verificar contratos HTTP entre servicios involucrados.
+5. Actualizar documentación técnica en `README.md` y `documentacion/*.md`.
+
+### Criterios de calidad
+
+- Mantener cohesión del dominio por microservicio.
+- Evitar acoplamiento por base de datos entre servicios.
+- Preferir DTOs para integración remota.
+- Mantener consistencia de enums de estado.
+- Documentar cualquier endpoint o contrato nuevo.
+
+---
+
+Para el detalle técnico por componente, revisar los archivos de la carpeta `documentacion/`.

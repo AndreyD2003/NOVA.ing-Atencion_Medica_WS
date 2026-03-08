@@ -1,12 +1,14 @@
-# Glosario — NOVA Atención Médica
+# Glosario Técnico — NOVA Atención Médica
 
-- JWT: Token JSON Web firmado; incluye claims como userId y roles (concepto histórico, no usado en la versión actual del sistema).
-- Feign: Cliente HTTP declarativo para invocar endpoints de otros MSVCs.
-- Propiedad: Regla de negocio que limita acceso/modificación a dueños del recurso.
-- Solape: Intersección de rangos de horas en citas; inválido para médico/paciente.
-- EstadoCita: PROGRAMADA, CANCELADA, REALIZADA.
-- Soft delete: Desactivar en lugar de borrar; se usa activo=true en diagnósticos.
-- @PreAuthorize: Anotación de Spring para verificar roles/authorities antes de ejecutar endpoints (concepto histórico, no aplicado en la versión actual del sistema).
-- Repositorio: Capa de acceso a datos con consultas JPA/HQL.
-- DTO: Objeto de transferencia para respuestas/solicitudes, evita exponer el modelo completo.
-- Auditoría: Registro de cambios y actores; recomendable en futuras migraciones.
+- **OpenFeign**: cliente HTTP declarativo usado para comunicación entre microservicios.
+- **DTO**: objeto de transferencia para desacoplar contratos API del modelo persistente.
+- **Soft delete**: eliminación lógica; el registro no se borra físicamente.
+- **IRI**: identificador global de recursos en RDF.
+- **RDF**: modelo de datos orientado a grafo basado en tripletas sujeto-predicado-objeto.
+- **OWL**: lenguaje de ontologías para definir semántica e inferencias.
+- **SPARQL**: lenguaje de consulta para grafos RDF.
+- **JSON-LD**: serialización JSON para datos enlazados.
+- **Razonamiento OWL**: inferencia de conocimiento derivado a partir de axiomas.
+- **Solape de citas**: intersección de intervalos horarios para médico o paciente.
+- **`create-drop`**: estrategia JPA que crea y elimina esquema al iniciar/detener la aplicación.
+- **Agregación de detalle**: patrón de composición de datos desde múltiples MSVC en una sola respuesta.
