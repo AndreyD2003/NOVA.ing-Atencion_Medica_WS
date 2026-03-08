@@ -82,6 +82,21 @@ export const DoctorList = () => {
     d.especialidad.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const dayLabel: Record<string, string> = {
+    MONDAY: 'Lunes',
+    TUESDAY: 'Martes',
+    WEDNESDAY: 'Miércoles',
+    THURSDAY: 'Jueves',
+    FRIDAY: 'Viernes',
+    SATURDAY: 'Sábado',
+    SUNDAY: 'Domingo'
+  };
+
+  const formatTime = (time: string) => {
+    if (!time) return '';
+    return time.length >= 5 ? time.slice(0, 5) : time;
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -122,6 +137,7 @@ export const DoctorList = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Médico</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Especialidad</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horario</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
@@ -135,6 +151,19 @@ export const DoctorList = () => {
                     <div className="text-sm text-gray-500">DNI: {doctor.dni}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{doctor.especialidad}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">
+                    {doctor.horarios && doctor.horarios.length > 0 ? (
+                      <div className="space-y-1">
+                        {doctor.horarios.map((horario) => (
+                          <div key={horario.id ?? `${horario.diaSemana}-${horario.horaInicio}-${horario.horaFin}`}>
+                            {dayLabel[horario.diaSemana] ?? horario.diaSemana}: {formatTime(horario.horaInicio)} - {formatTime(horario.horaFin)}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-gray-400">Sin horario</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{doctor.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${doctor.estado === 'ACTIVO' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>

@@ -1,5 +1,12 @@
 import { api } from '@/api/axios';
 
+export interface DoctorSchedule {
+  id?: number;
+  diaSemana: string;
+  horaInicio: string;
+  horaFin: string;
+}
+
 export interface Doctor {
   id?: number;
   dni: string;
@@ -10,6 +17,7 @@ export interface Doctor {
   estado: string;
   telefono: string;
   usuarioId?: number;
+  horarios?: DoctorSchedule[];
 }
 
 export const doctorService = {

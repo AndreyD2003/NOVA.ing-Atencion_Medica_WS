@@ -49,7 +49,7 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/diagnosticos/, '/diagnosticos'),
       },
-      '/api/semantic': {
+      '/api/v1/semantic': {
         target: 'http://localhost:8084',
         changeOrigin: true,
       },

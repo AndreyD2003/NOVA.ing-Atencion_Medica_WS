@@ -1,0 +1,96 @@
+@prefix med:  <http://org.nova.atencion.medica/ontologia#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+<http://org.nova.atencion.medica/ontologia#> a owl:Ontology ;
+    rdfs:label "Ontología de Gestión de Atención Médica" .
+
+# ==========================================
+# CLASES (Entidades de tus MSVC)
+# ==========================================
+
+med:Paciente a owl:Class ; rdfs:label "Paciente" .
+med:Medico a owl:Class ; rdfs:label "Médico" .
+med:Cita a owl:Class ; rdfs:label "Cita Médica" .
+med:Diagnostico a owl:Class ; rdfs:label "Diagnóstico Clínico" .
+
+# Paciente y medico no pueden se la mismna persona
+med:Paciente owl:disjointWith med:Medico .
+
+# ==========================================
+# PROPIEDADES DE DATOS (Atributos)
+# ==========================================
+
+# --- Paciente ---
+med:dniPaciente a owl:DatatypeProperty , owl:FunctionalProperty ; rdfs:domain med:Paciente ; rdfs:range xsd:string .
+med:nombreCompleto a owl:DatatypeProperty ; rdfs:domain med:Paciente ; rdfs:range xsd:string .
+med:emailPaciente a owl:DatatypeProperty ; rdfs:domain med:Paciente ; rdfs:range xsd:string .
+
+# --- Médico ---
+med:dniMedico a owl:DatatypeProperty , owl:FunctionalProperty ; rdfs:domain med:Medico ; rdfs:range xsd:string .
+med:nombreMedico a owl:DatatypeProperty ; rdfs:domain med:Medico ; rdfs:range xsd:string .
+med:especialidad a owl:DatatypeProperty ; rdfs:domain med:Medico ; rdfs:range xsd:string .
+
+# --- Cita ---
+med:fechaCita a owl:DatatypeProperty ; rdfs:domain med:Cita ; rdfs:range xsd:string .
+med:motivoCita a owl:DatatypeProperty ; rdfs:domain med:Cita ; rdfs:range xsd:string .
+med:estadoCita a owl:DatatypeProperty ; rdfs:domain med:Cita ; rdfs:range xsd:string .
+
+# --- Diagnóstico ---
+med:descripcionDiag a owl:DatatypeProperty ; rdfs:domain med:Diagnostico ; rdfs:range xsd:string .
+med:tipoDiag a owl:DatatypeProperty ; rdfs:domain med:Diagnostico ; rdfs:range xsd:string .
+
+# ==========================================
+# RELACIONES (Object Properties)
+# ==========================================
+
+# Una Cita pertenece a un Paciente
+med:citaAgendadaPara a owl:ObjectProperty ;
+    rdfs:domain med:Cita ;
+    rdfs:range med:Paciente .
+
+# Una Cita es realizada por un Médico
+med:atendidaPor a owl:ObjectProperty ;
+    rdfs:domain med:Cita ;
+    rdfs:range med:Medico .
+
+# Una Cita puede generar uno o varios Diagnósticos
+med:generaDiagnostico a owl:ObjectProperty ;
+    rdfs:domain med:Cita ;
+    rdfs:range med:Diagnostico .
+
+ # ==========================================
+ # RESTRICCIONES
+ # ==========================================
+
+ med:Cita rdfs:subClassOf [
+     a owl:Restriction ;
+     owl:onProperty med:atendidaPor ;
+     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+     owl:onClass med:Medico
+ ] .
+
+ med:Cita rdfs:subClassOf [
+     a owl:Restriction ;
+     owl:onProperty med:citaAgendadaPara ;
+     owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+     owl:onClass med:Paciente
+ ] .
+
+ # ==========================================
+ # PROPIEDADES INVERSAS
+ # ==========================================
+
+ # Desde Paciente hacia sus Citas
+ med:citaAgendadaPara owl:inverseOf med:tieneCitas .
+ med:tieneCitas a owl:ObjectProperty ;
+     rdfs:domain med:Paciente ;
+     rdfs:range  med:Cita .
+
+ # Desde Médico hacia sus Citas
+ med:atendidaPor owl:inverseOf med:citasAtendidas .
+ med:citasAtendidas a owl:ObjectProperty ;
+     rdfs:domain med:Medico ;
+     rdfs:range  med:Cita .

@@ -9,6 +9,7 @@ public class Medico {
     private String apellidos;
     private String especialidad;
     private String telefono;
+    private String dni;
     private String email;
     private String estado;
 }

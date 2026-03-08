@@ -1,12 +1,9 @@
 package org.nova.ing.springcloud.atencion.medica.msvc.cita.services.implementation;
 
-import org.nova.ing.springcloud.atencion.medica.msvc.cita.clients.DiagnosticoClientRest;
-import org.nova.ing.springcloud.atencion.medica.msvc.cita.clients.MedicoClientRest;
-import org.nova.ing.springcloud.atencion.medica.msvc.cita.clients.PacienteClientRest;
+import lombok.extern.slf4j.Slf4j;
+import org.nova.ing.springcloud.atencion.medica.msvc.cita.clients.*;
 import org.nova.ing.springcloud.atencion.medica.msvc.cita.enums.EstadoCita;
-import org.nova.ing.springcloud.atencion.medica.msvc.cita.models.dto.CitaDetalle;
-import org.nova.ing.springcloud.atencion.medica.msvc.cita.models.dto.Medico;
-import org.nova.ing.springcloud.atencion.medica.msvc.cita.models.dto.Paciente;
+import org.nova.ing.springcloud.atencion.medica.msvc.cita.models.dto.*;
 import org.nova.ing.springcloud.atencion.medica.msvc.cita.models.entities.CitaEntity;
 import org.nova.ing.springcloud.atencion.medica.msvc.cita.repositories.CitaRepository;
 import org.nova.ing.springcloud.atencion.medica.msvc.cita.services.CitaService;
@@ -14,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CitaServiceImpl implements CitaService {
 
@@ -32,6 +32,11 @@ public class CitaServiceImpl implements CitaService {
 
     @Autowired
     private DiagnosticoClientRest diagnosticoClient;
+
+    @Autowired
+    private SemanticClientRest semanticClient;
+
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     @Transactional(readOnly = true)
@@ -55,18 +60,10 @@ public class CitaServiceImpl implements CitaService {
             detalle.setCita(cita);
             try {
                 detalle.setPaciente(pacienteClient.detalle(cita.getPacienteId()));
-            } catch (Exception e) {
-                // TODO: Handle exception (log it)
-            }
-            try {
                 detalle.setMedico(medicoClient.detalle(cita.getMedicoId()));
-            } catch (Exception e) {
-                // TODO: Handle exception
-            }
-            try {
                 detalle.setDiagnosticos(diagnosticoClient.listarPorCita(cita.getId()));
             } catch (Exception e) {
-                // Handle exception
+                log.error("Error al obtener detalles externos: {}", e.getMessage());
             }
             return Optional.of(detalle);
         }
@@ -88,7 +85,6 @@ public class CitaServiceImpl implements CitaService {
     @Override
     @Transactional
     public CitaEntity guardar(CitaEntity cita) {
-        // Normalizar fecha (remover componente de tiempo)
         if (cita.getFechaCita() != null) {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(cita.getFechaCita());
@@ -99,38 +95,33 @@ public class CitaServiceImpl implements CitaService {
             cita.setFechaCita(calendar.getTime());
         }
 
-        // Validar conflictos de horario
+        // Validaciones de conflicto
         if (repository.existsConflictMedico(cita.getMedicoId(), cita.getFechaCita(), cita.getHoraInicio(), cita.getHoraFin(), cita.getId())) {
-            throw new RuntimeException("Conflicto de horario: El médico ya tiene una cita programada en este intervalo.");
+            throw new RuntimeException("Conflicto de horario médico.");
         }
-
         if (repository.existsConflictPaciente(cita.getPacienteId(), cita.getFechaCita(), cita.getHoraInicio(), cita.getHoraFin(), cita.getId())) {
-            throw new RuntimeException("Conflicto de horario: El paciente ya tiene una cita programada en este intervalo.");
+            throw new RuntimeException("Conflicto de horario paciente.");
         }
 
-        Medico medico;
+        // Obtener detalles para la validación y sincronización posterior
+        Medico medico = medicoClient.detalle(cita.getMedicoId());
+        Paciente paciente = pacienteClient.detalle(cita.getPacienteId());
+
+        if (medico == null || !"ACTIVO".equalsIgnoreCase(medico.getEstado()))
+            throw new RuntimeException("Médico no encontrado o inactivo.");
+        if (paciente == null || !"ACTIVO".equalsIgnoreCase(paciente.getEstado()))
+            throw new RuntimeException("Paciente no encontrado o inactivo.");
+
+        CitaEntity citaGuardada = repository.save(cita);
+
+        // Sincronización Semántica
         try {
-            medico = medicoClient.detalle(cita.getMedicoId());
+            sincronizarConGrafo(citaGuardada, paciente, medico);
         } catch (Exception e) {
-            throw new RuntimeException("Medico no encontrado con ID: " + cita.getMedicoId());
+            log.error("Error al sincronizar con Grafo Semántico: {}", e.getMessage());
         }
 
-        if (medico == null || !"ACTIVO".equalsIgnoreCase(medico.getEstado())) {
-            throw new RuntimeException("El médico con ID " + cita.getMedicoId() + " no se encuentra activo para realizar consultas.");
-        }
-
-        Paciente paciente;
-        try {
-            paciente = pacienteClient.detalle(cita.getPacienteId());
-        } catch (Exception e) {
-            throw new RuntimeException("Paciente no encontrado con ID: " + cita.getPacienteId());
-        }
-
-        if (paciente == null || !"ACTIVO".equalsIgnoreCase(paciente.getEstado())) {
-            throw new RuntimeException("El paciente con ID " + cita.getPacienteId() + " no se encuentra activo.");
-        }
-
-        return repository.save(cita);
+        return citaGuardada;
     }
 
     @Override
@@ -141,6 +132,12 @@ public class CitaServiceImpl implements CitaService {
             CitaEntity cita = o.get();
             cita.setEstado(EstadoCita.CANCELADA);
             repository.save(cita);
+
+            try {
+                sincronizarConGrafo(cita, pacienteClient.detalle(cita.getPacienteId()), medicoClient.detalle(cita.getMedicoId()));
+            } catch (Exception e) {
+                log.error("Error al sincronizar cancelación: {}", e.getMessage());
+            }
         }
     }
 
@@ -148,5 +145,43 @@ public class CitaServiceImpl implements CitaService {
     @Transactional
     public void eliminarPermanente(Long id) {
         repository.deleteById(id);
+    }
+
+    // Método privado para manejar la lógica de sincronización
+    private void sincronizarConGrafo(CitaEntity cita, Paciente paciente, Medico medico) {
+        SyncRequestDTO syncDTO = SyncRequestDTO.builder()
+                .citaId(cita.getId())
+                .fechaCita(dateFormat.format(cita.getFechaCita()))
+                .horaInicio(cita.getHoraInicio().toString())
+                .horaFin(cita.getHoraFin().toString())
+                .motivo(cita.getMotivo())
+                .estadoCita(cita.getEstado().name())
+                .pacienteId(paciente.getId())
+                .dniPaciente(paciente.getDni())
+                .nombrePaciente(paciente.getNombres())
+                .apellidoPaciente(paciente.getApellidos())
+                .emailPaciente(paciente.getEmail())
+                .medicoId(medico.getId())
+                .dniMedico(medico.getDni())
+                .nombreMedico(medico.getNombres())
+                .especialidad(medico.getEspecialidad())
+                .build();
+
+        if (cita.getEstado() == EstadoCita.REALIZADA) {
+            try {
+                List<Diagnostico> diags = diagnosticoClient.listarPorCita(cita.getId());
+                syncDTO.setDiagnosticos(diags.stream()
+                        .map(d -> SyncRequestDTO.DiagnosticoSyncDTO.builder()
+                                .descripcion(d.getDescripcion())
+                                .tipoDiagnostico(d.getTipoDiagnostico())
+                                .build())
+                        .collect(Collectors.toList()));
+            } catch (Exception e) {
+                log.warn("No se pudieron adjuntar diagnósticos.");
+            }
+        }
+
+        // Esta llamada debe coincidir con el nombre en SemanticClientRest
+        semanticClient.sincronizar(syncDTO);
     }
 }
