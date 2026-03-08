@@ -1,16 +1,117 @@
 # Table of contents
 
-* [Welcome](README.md)
+* [Inicio](README.md)
 
-## Getting Started
+## Arquitectura
 
-* [Quickstart](getting-started/quickstart.md)
-* [Publish your docs](getting-started/publish-your-docs.md)
+* [Visión general del proyecto](arquitectura/vision-general-del-proyecto.md)
+* [Casos de uso principales](arquitectura/casos-de-uso-principales.md)
+* [Comunicación y contratos](arquitectura/comunicacion-y-contratos.md)
+* [Patrón interno de los servicios](arquitectura/patron-interno-de-los-servicios.md)
+* [Estructura ampliada del repositorio](arquitectura/estructura-ampliada-del-repositorio.md)
+* [Datos, configuración y ejecución](arquitectura/datos-configuracion-y-ejecucion.md)
+* [Ejemplos rápidos de verificación](arquitectura/ejemplos-rapidos-de-verificacion.md)
+* [Contribución y criterios de calidad](arquitectura/contribucion-y-criterios-de-calidad.md)
 
-## Basics
+## Microservicios
 
-* [Editor](basics/editor.md)
-* [Markdown](basics/markdown.md)
-* [Images & media](basics/images-and-media.md)
-* [Interactive blocks](basics/interactive-blocks.md)
-* [Integrations](basics/integrations.md)
+* [Paciente](microservicios/paciente/README.md)
+  * [Resumen](microservicios/paciente/resumen.md)
+  * [Referencia de endpoints](microservicios/paciente/referencia-de-endpoints.md)
+  * [Controladores](microservicios/paciente/controladores.md)
+  * [Servicios](microservicios/paciente/servicios.md)
+  * [Repositorios](microservicios/paciente/repositorios.md)
+  * [DTOs y contratos](microservicios/paciente/dtos-y-contratos.md)
+  * [Entidades y enums](microservicios/paciente/entidades-y-enums.md)
+  * [Clientes Feign](microservicios/paciente/clientes-feign.md)
+* [Médico](microservicios/medico/README.md)
+  * [Resumen](microservicios/medico/resumen.md)
+  * [Referencia de endpoints](microservicios/medico/referencia-de-endpoints.md)
+  * [Controladores](microservicios/medico/controladores.md)
+  * [Servicios](microservicios/medico/servicios.md)
+  * [Repositorios](microservicios/medico/repositorios.md)
+  * [DTOs y contratos](microservicios/medico/dtos-y-contratos.md)
+  * [Entidades y enums](microservicios/medico/entidades-y-enums.md)
+  * [Clientes Feign](microservicios/medico/clientes-feign.md)
+* [Cita](microservicios/cita/README.md)
+  * [Resumen](microservicios/cita/resumen.md)
+  * [Referencia de endpoints](microservicios/cita/referencia-de-endpoints.md)
+  * [Controladores](microservicios/cita/controladores.md)
+  * [Servicios](microservicios/cita/servicios.md)
+  * [Repositorios](microservicios/cita/repositorios.md)
+  * [DTOs y contratos](microservicios/cita/dtos-y-contratos.md)
+  * [Entidades y enums](microservicios/cita/entidades-y-enums.md)
+  * [Clientes Feign](microservicios/cita/clientes-feign.md)
+* [Diagnóstico](microservicios/diagnostico/README.md)
+  * [Resumen](microservicios/diagnostico/resumen.md)
+  * [Referencia de endpoints](microservicios/diagnostico/referencia-de-endpoints.md)
+  * [Controladores](microservicios/diagnostico/controladores.md)
+  * [Servicios](microservicios/diagnostico/servicios.md)
+  * [Repositorios](microservicios/diagnostico/repositorios.md)
+  * [DTOs y contratos](microservicios/diagnostico/dtos-y-contratos.md)
+  * [Entidades y enums](microservicios/diagnostico/entidades-y-enums.md)
+  * [Clientes Feign](microservicios/diagnostico/clientes-feign.md)
+
+## Flujos del sistema
+
+## Flujos
+
+* [Crear una cita](flujos/crear-una-cita.md)
+* [Consultar una cita con detalle](flujos/consultar-una-cita-con-detalle.md)
+* [Generar RDF por cita](flujos/generar-rdf-por-cita.md)
+* [Consulta en lenguaje natural](flujos/consulta-en-lenguaje-natural.md)
+* [Registrar un diagnóstico desde el módulo médico](flujos/registrar-un-diagnostico-desde-el-modulo-medico.md)
+* [Consultar historial médico del paciente](flujos/consultar-historial-medico-del-paciente.md)
+* [Exportar RDF del sistema completo](flujos/exportar-rdf-del-sistema-completo.md)
+* [Ejecutar SPARQL manual sobre el sistema](flujos/ejecutar-sparql-manual-sobre-el-sistema.md)
+* [Mapa rápido de clases involucradas](flujos/mapa-rapido-de-clases-involucradas.md)
+
+## Web semántica
+
+* [Objetivo y recorrido recomendado](web-semantica/objetivo-y-recorrido-recomendado.md)
+* [Conceptos base](web-semantica/conceptos-base.md)
+* [Casos de uso y escenarios](web-semantica/casos-de-uso-y-escenarios.md)
+* [Diagramas del módulo semántico](web-semantica/diagramas-del-modulo-semantico.md)
+* [Límites y restricciones actuales](web-semantica/limites-y-restricciones-actuales.md)
+* [Módulo semántico](web-semantica/modulo-semantico/README.md)
+  * [Servicio semántico](web-semantica/modulo-semantico/servicio-semantico.md)
+  * [Referencia de endpoints](web-semantica/modulo-semantico/referencia-de-endpoints.md)
+  * [Consultas y ejemplos](web-semantica/modulo-semantico/consultas-y-ejemplos.md)
+  * [Controladores](web-semantica/modulo-semantico/controladores.md)
+  * [Servicios](web-semantica/modulo-semantico/servicios.md)
+  * [Repositorios](web-semantica/modulo-semantico/repositorios.md)
+  * [DTOs y contratos](web-semantica/modulo-semantico/dtos-y-contratos.md)
+  * [Entidades y modelos](web-semantica/modulo-semantico/entidades-y-modelos.md)
+  * [Clientes Feign](web-semantica/modulo-semantico/clientes-feign.md)
+  * [Estructura interna del módulo](web-semantica/modulo-semantico/estructura-interna-del-modulo.md)
+
+***
+
+* [Glosario](glosario.md)
+* [Auditoría final](auditoria-final.md)
+
+## Fuentes
+
+* [README](fuentes/readme.md)
+* [00 Documentacion General](fuentes/00-documentacion-general.md)
+* [01 Guia Web Semantica Para Principiantes](fuentes/01-guia-web-semantica-para-principiantes.md)
+* [02 Casos de Uso](fuentes/02-casos-de-uso.md)
+* [glosario](fuentes/glosario.md)
+* [msvc cita](fuentes/msvc-cita.md)
+* [msvc diagnostico](fuentes/msvc-diagnostico.md)
+* [msvc medico](fuentes/msvc-medico.md)
+* [msvc paciente](fuentes/msvc-paciente.md)
+* [msvc web semantica](fuentes/msvc-web-semantica.md)
+* [WebSemantica](fuentes/websemantica.md)
+* [Auditoría de cobertura de Fuentes](fuentes/auditoria-de-cobertura-de-fuentes.md)
+* [Auditoría final de cobertura de Fuentes](fuentes/auditoria-final-de-cobertura-de-fuentes.md)
+* [Pacientes](fuentes/pacientes.md)
+* [Médicos](fuentes/medicos.md)
+* [Citas](fuentes/citas.md)
+* [Diagnósticos](fuentes/diagnosticos.md)
+* [Paciente (msvc-paciente)](fuentes/paciente-msvc-paciente.md)
+* [Médico (msvc-medico)](fuentes/medico-msvc-medico.md)
+* [Cita (msvc-cita)](fuentes/cita-msvc-cita.md)
+* [Diagnóstico (msvc-diagnostico)](fuentes/diagnostico-msvc-diagnostico.md)
+* [msvc-web-semantica](fuentes/msvc-web-semantica-1.md)
+* [Auditoría maestra de cobertura de Fuentes](fuentes/auditoria-maestra-de-cobertura-de-fuentes.md)

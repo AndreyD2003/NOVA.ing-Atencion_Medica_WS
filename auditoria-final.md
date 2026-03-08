@@ -1,0 +1,107 @@
+# Auditoría final
+
+Esta página verifica que el contenido útil de `Fuentes` ya exista en la documentación nueva.
+
+### Estado general
+
+* La arquitectura global ya fue migrada.
+* Los microservicios ya fueron desmenuzados.
+* Los endpoints ya tienen referencia navegable.
+* Los flujos principales y complementarios ya están documentados.
+* La capa semántica ya conserva conceptos, estructura, diagramas, consultas, límites y escenarios.
+
+### Cobertura por documento fuente
+
+#### `README`
+
+Cubierto en:
+
+* [Visión general del proyecto](arquitectura/vision-general-del-proyecto.md)
+* [Comunicación y contratos](arquitectura/comunicacion-y-contratos.md)
+* [Datos, configuración y ejecución](arquitectura/datos-configuracion-y-ejecucion.md)
+* [Patrón interno de los servicios](arquitectura/patron-interno-de-los-servicios.md)
+* [Contribución y criterios de calidad](arquitectura/contribucion-y-criterios-de-calidad.md)
+* [Ejemplos rápidos de verificación](arquitectura/ejemplos-rapidos-de-verificacion.md)
+
+#### `00 Documentacion General`
+
+Cubierto en:
+
+* [Visión general del proyecto](arquitectura/vision-general-del-proyecto.md)
+* [Comunicación y contratos](arquitectura/comunicacion-y-contratos.md)
+* [Casos de uso principales](arquitectura/casos-de-uso-principales.md)
+* [Límites y restricciones actuales](web-semantica/limites-y-restricciones-actuales.md)
+
+#### `01 Guia Web Semantica Para Principiantes`
+
+Cubierto en:
+
+* [Objetivo y recorrido recomendado](web-semantica/objetivo-y-recorrido-recomendado.md)
+* [Conceptos base](web-semantica/conceptos-base.md)
+* [Consultas y ejemplos](web-semantica/modulo-semantico/consultas-y-ejemplos.md)
+* [Límites y restricciones actuales](web-semantica/limites-y-restricciones-actuales.md)
+
+#### `02 Casos de Uso`
+
+Cubierto en:
+
+* [Crear una cita](flujos/crear-una-cita.md)
+* [Consultar una cita con detalle](flujos/consultar-una-cita-con-detalle.md)
+* [Generar RDF por cita](flujos/generar-rdf-por-cita.md)
+* [Consulta en lenguaje natural](flujos/consulta-en-lenguaje-natural.md)
+* [Mapa rápido de clases involucradas](flujos/mapa-rapido-de-clases-involucradas.md)
+
+#### `glosario`
+
+Cubierto en:
+
+* [Glosario](glosario.md)
+
+#### `msvc paciente`
+
+Cubierto en:
+
+* [Paciente](microservicios/paciente/)
+
+#### `msvc medico`
+
+Cubierto en:
+
+* [Médico](microservicios/medico/)
+
+#### `msvc cita`
+
+Cubierto en:
+
+* [Cita](microservicios/cita/)
+
+#### `msvc diagnostico`
+
+Cubierto en:
+
+* [Diagnóstico](microservicios/diagnostico/)
+
+#### `msvc web semantica`
+
+Cubierto en:
+
+* [Módulo semántico](web-semantica/modulo-semantico/)
+* [Consultas y ejemplos](web-semantica/modulo-semantico/consultas-y-ejemplos.md)
+* [Casos de uso y escenarios](web-semantica/casos-de-uso-y-escenarios.md)
+* [Límites y restricciones actuales](web-semantica/limites-y-restricciones-actuales.md)
+
+#### `WebSemantica`
+
+Cubierto en:
+
+* [Conceptos base](web-semantica/conceptos-base.md)
+* [Estructura ampliada del repositorio](arquitectura/estructura-ampliada-del-repositorio.md)
+* [Estructura interna del módulo](web-semantica/modulo-semantico/estructura-interna-del-modulo.md)
+* [Diagramas del módulo semántico](web-semantica/diagramas-del-modulo-semantico.md)
+* [Casos de uso y escenarios](web-semantica/casos-de-uso-y-escenarios.md)
+
+### Conclusión
+
+La documentación nueva ya contiene el contenido operativo y técnico de `Fuentes`.
+
+Puedes borrar `Fuentes` cuando quieras hacer la limpieza final.

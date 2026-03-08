@@ -1,13 +1,44 @@
----
-icon: hand-wave
----
+# Inicio
 
-# Welcome
+NOVA es un backend distribuido para atención médica con una capa semántica sobre los datos clínicos.
 
-Welcome to the GitBook starter template! Here you'll get an overview of all the amazing features GitBook offers to help you build beautiful, interactive documentation.
+La documentación quedó separada por contexto, servicio y flujo real de ejecución.
 
-You'll see some of the best parts of GitBook in action — and find help on how you can turn this template into your own.
+### Qué puedes entender aquí
 
-### Jump right in
+* qué resuelve el sistema,
+* cómo se integran los microservicios,
+* qué hace cada servicio,
+* cómo fluye una operación completa,
+* cómo funciona la capa semántica.
 
-<table data-view="cards"><thead><tr><th></th><th></th><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><h4><i class="fa-bolt">:bolt:</i></h4></td><td><strong>Quickstart</strong></td><td>Create your first site</td><td></td><td></td><td><a href="getting-started/quickstart.md">quickstart.md</a></td></tr><tr><td><h4><i class="fa-leaf">:leaf:</i></h4></td><td><strong>Editor basics</strong></td><td>Learn the basics of GitBook</td><td></td><td></td><td><a href="https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md">https://github.com/GitbookIO/gitbook-templates/blob/main/product-docs/broken-reference/README.md</a></td></tr><tr><td><h4><i class="fa-globe-pointer">:globe-pointer:</i></h4></td><td><strong>Publish your docs</strong></td><td>Share your docs online</td><td></td><td></td><td><a href="getting-started/publish-your-docs.md">publish-your-docs.md</a></td></tr></tbody></table>
+### Ruta recomendada si eres nuevo en el tema
+
+1. [Visión general del proyecto](arquitectura/vision-general-del-proyecto.md)
+2. [Conceptos base](web-semantica/conceptos-base.md)
+3. [Crear una cita](flujos/crear-una-cita.md)
+4. [Consultar una cita con detalle](flujos/consultar-una-cita-con-detalle.md)
+5. [Glosario](glosario.md)
+
+### Ruta recomendada si vienes a revisar diseño o implementación
+
+1. [Comunicación y contratos](arquitectura/comunicacion-y-contratos.md)
+2. [Citas](fuentes/citas.md)
+3. [Servicio semántico](web-semantica/modulo-semantico/servicio-semantico.md)
+4. [Generar RDF por cita](flujos/generar-rdf-por-cita.md)
+5. [Consulta en lenguaje natural](flujos/consulta-en-lenguaje-natural.md)
+
+### Mapa de la documentación
+
+* [Arquitectura](/broken/spaces/RsosOAlvssjCr7Prg5Uu/pages/v1nllSBSzz5DFL5IcE64)
+* [Microservicios](/broken/spaces/RsosOAlvssjCr7Prg5Uu/pages/1uAtBV9kn8xkQUv5xjmn)
+* [Flujos del sistema](/broken/spaces/RsosOAlvssjCr7Prg5Uu/pages/WPWN2ClPruIv70Msr93m)
+* [Web semántica](/broken/spaces/RsosOAlvssjCr7Prg5Uu/pages/RIlBNtsNjY0MVjJ8QONX)
+* [Glosario](glosario.md)
+* [Fuentes](/broken/spaces/RsosOAlvssjCr7Prg5Uu/pages/F2wszRioU4p3jp8JXE4l)
+
+### Alcance actual de esta reorganización
+
+Todo el contenido nuevo se armó a partir de la documentación original ya existente.
+
+La sección [Fuentes](/broken/spaces/RsosOAlvssjCr7Prg5Uu/pages/F2wszRioU4p3jp8JXE4l) conserva el material base para trazabilidad.

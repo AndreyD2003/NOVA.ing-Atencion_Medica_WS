@@ -1,0 +1,2 @@
+# Diagnóstico (msvc-diagnostico)
+
